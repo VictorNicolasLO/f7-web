@@ -1,18 +1,21 @@
-import { For } from "@chakra-ui/react"
-import Post from "../../components/post"
-import PostBox from "../../components/post-box"
+
+import { Stack } from "@chakra-ui/react"
 import TopBar from "../../components/topbar"
+import { useTopbar } from "../../components/topbar/hooks/user-topbar"
+import HomeRouter from "./router"
+import { memo } from "react"
+
+const NEWS_PATH = '/home/feed/news'
+const PERSONAL_FEED_PATH = '/home/feed/personal-feed'
 
 const Home = () => {
-  return (<>
-      <TopBar />
-       <PostBox />
-        <For each={new Array(10).fill(0).map((_, i) => i)}>
-            {(item, index) => (<Post key={index}/>)}
-            
-        </For> 
-  </>
+  const topbarProps = useTopbar(NEWS_PATH, PERSONAL_FEED_PATH)
+
+  return (<Stack gap={12}>
+    <TopBar {...topbarProps} />
+    <HomeRouter />
+  </Stack>
 
   )
 }
-export default Home
+export default memo(Home)

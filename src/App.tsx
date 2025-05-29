@@ -2,7 +2,7 @@ import { BrowserRouter} from 'react-router-dom';
 import './App.css';
 import RootRouter from './router';
 import { useColorMode } from './components/ui/color-mode';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 
 const App = () => {
   const { setColorMode } = useColorMode();
@@ -19,4 +19,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default memo(App) ;

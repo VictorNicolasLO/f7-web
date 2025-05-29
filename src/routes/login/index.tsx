@@ -1,7 +1,8 @@
-import {Button, Field, Flex, Input, Stack, } from "@chakra-ui/react"
+import {Button, Field, Flex, Heading, Input, Stack, } from "@chakra-ui/react"
 import { PasswordInput } from "../../components/ui/password-input"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
+import { memo } from "react"
 
 
 interface FormValues {
@@ -17,11 +18,12 @@ const Login = () => {
     formState: { errors },
   } = useForm<FormValues>()
   const navigate = useNavigate()
-  const onSubmit = handleSubmit((data: FormValues) => navigate('/home'))
+  const onSubmit = handleSubmit((data: FormValues) => navigate('/home/feed/news'))
   return (
     <Flex align={"center"} justify="center" height="100vh">
       <form onSubmit={onSubmit}>
         <Stack gap="4" align="flex-start" width={'sm'} maxWidth={'xs'} >
+          <Heading size="2xl">Fast 7</Heading>
           <Field.Root invalid={!!errors.username}>
             <Field.Label>Username</Field.Label>
             <Input {...register("username")} />
@@ -42,4 +44,4 @@ const Login = () => {
 
   )
 }
-export default Login
+export default memo(Login) 

@@ -1,21 +1,22 @@
 
-import { Navigate, Route, Routes,  } from 'react-router-dom'
+import { Navigate, Route, Routes, } from 'react-router-dom'
 import Login from './routes/login'
 import { memo } from 'react'
 import Home from './routes/home'
 
+
 const RootRouter = () => {
   return (
-      <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/login" element={<Login />}  />
-          <Route path="/home" element={<Home />}  />
-          <Route path="/" element={<Navigate to="/login" replace />}  />
-          {/* <Route path="/register" element={<Register />} />
+    <Routes>
+      {/* <Route path="/" element={<Home />} /> */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/home/*" element={<Home />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard loggedIn={loggedIn} />} /> */}
-      </Routes>
+    </Routes>
   )
 }
 
-export default memo(RootRouter) 
+export default memo(RootRouter)
 
