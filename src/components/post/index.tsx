@@ -1,17 +1,15 @@
-import { Card, Flex, IconButton, LinkBox, LinkOverlay, Stack, Text } from "@chakra-ui/react"
+import { Card, Flex, IconButton, Link, LinkBox, LinkOverlay, Stack, Text } from "@chakra-ui/react"
 import { memo } from "react"
 import { LuThumbsUp, LuEye, LuMessageCircle } from "react-icons/lu"
 
 
 const Post = memo(({})  => {
 
-  
-
     const cardJsx = <Card.Root size={'lg'} >
         <Card.Body>
-            <Card.Title>“Just had coffee and now I can hear colors”</Card.Title>
+            <Card.Title><Link href="#">“Just had coffee and now I can hear colors”</Link></Card.Title>
             <Card.Description>
-                @caffeine_addict
+            <Link href="#">@caffeine_addict </Link>
             </Card.Description>
         </Card.Body>
 
@@ -19,10 +17,9 @@ const Post = memo(({})  => {
     return (
         <Flex align={"center"} justify="center" >
             <Stack width={'xl'} maxWidth={'xl'}  >
-                <LinkBox>
+            
                     {cardJsx}
-                    <LinkOverlay href="#"/>
-                </LinkBox>
+              
                 <Stack direction={'row'} gap={1} align="center" justify="flex-start">
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
                         <IconButton aria-label="Search database" variant={'ghost'}>
@@ -37,7 +34,7 @@ const Post = memo(({})  => {
                         <Text userSelect={'none'}>46</Text>
                     </Stack>
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
-                        <IconButton aria-label="Search database" variant={'ghost'}>
+                        <IconButton aria-label="Search database" variant={'ghost'} >
                             <LuEye />
                         </IconButton>
                         <Text userSelect={'none'}>300</Text>
