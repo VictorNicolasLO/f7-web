@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Card, Circle, Float, IconButton, Input, InputGroup, Link, Text, VStack } from '@chakra-ui/react'
+import { Box,  IconButton, Input, InputGroup, Link,  VStack } from '@chakra-ui/react'
 import { memo } from 'react'
 import { LuSearch, LuStar } from 'react-icons/lu'
 

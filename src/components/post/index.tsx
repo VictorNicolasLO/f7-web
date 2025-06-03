@@ -1,4 +1,4 @@
-import { Card, Flex, IconButton, Link, LinkBox, LinkOverlay, Stack, Text } from "@chakra-ui/react"
+import { Card, Flex, IconButton, Link, Stack, Text } from "@chakra-ui/react"
 import { memo } from "react"
 import { LuThumbsUp, LuEye, LuMessageCircle } from "react-icons/lu"
 

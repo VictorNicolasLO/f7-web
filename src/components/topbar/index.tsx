@@ -1,6 +1,6 @@
-import { Flex, Grid, GridItem, Heading, Input, InputGroup, Separator, Tabs } from "@chakra-ui/react"
+import { Flex, Grid, GridItem, Heading,Separator, Tabs } from "@chakra-ui/react"
 import { memo } from "react"
-import { LuSearch, LuStar, LuGlobe } from "react-icons/lu"
+import { LuStar, LuGlobe } from "react-icons/lu"
 import ProfileSearcher from "../profile-searcher"
 
 export type TopBarProps = {
