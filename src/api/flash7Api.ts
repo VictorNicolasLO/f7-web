@@ -8,9 +8,16 @@ export type ApiConfig = {
 export class Flash7Api {
   private baseUrl: string
 
+  private accessToken?: string
+  private refreshToken?: string
+
   constructor(config: ApiConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, '')
+  }
 
+  setAuthTokens(accessToken: string, refreshToken: string) {
+    this.accessToken = accessToken
+    this.refreshToken = refreshToken
   }
 
   async status() {
@@ -29,7 +36,7 @@ export class Flash7Api {
     return res.json()
   }
 
-  async refreshToken(refreshToken: string) {
+  async callRefreshToken(refreshToken: string) {
     const res = await fetch(`${this.baseUrl}/refresh-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -39,71 +46,71 @@ export class Flash7Api {
     return res.json()
   }
 
-  async activateUser(jwt: string) {
+  async activateUser(jwt?: string) {
     const res = await fetch(`${this.baseUrl}/commands/activate-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt }),
+      body: JSON.stringify({ jwt : jwt || this.accessToken }),
       mode: 'cors'
     })
     return res.text()
   }
 
-  async post(jwt: string, postKey: string, content: string) {
+  async post(postKey: string, content: string) {
     const res = await fetch(`${this.baseUrl}/commands/post`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey, content }),
+      body: JSON.stringify({ jwt: this.accessToken, postKey, content }),
       mode: 'cors'
     })
     return res.text()
   }
 
-  async like(jwt: string, postKey: string) {
+  async like(postKey: string) {
     const res = await fetch(`${this.baseUrl}/commands/like`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey }),
+      body: JSON.stringify({ jwt: this.accessToken, postKey }),
       mode: 'cors'
     })
     return res.text()
   }
 
-  async view(jwt: string, postKey: string) {
+  async view(postKey: string) {
     const res = await fetch(`${this.baseUrl}/commands/view`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey }),
+      body: JSON.stringify({ jwt: this.accessToken, postKey }),
       mode: 'cors'
     })
     return res.text()
   }
 
-  async comment(jwt: string, postKey: string, content: string) {
+  async comment(postKey: string, content: string) {
     const res = await fetch(`${this.baseUrl}/commands/comment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey, content }),
+      body: JSON.stringify({ jwt: this.accessToken, postKey, content }),
       mode: 'cors'
     })
     return res.text()
   }
 
-  async follow(jwt: string, followedKey: string) {
+  async follow(followedKey: string) {
     const res = await fetch(`${this.baseUrl}/commands/follow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, followedKey }),
+      body: JSON.stringify({ jwt: this.accessToken, followedKey }),
       mode: 'cors'
     })
     return res.text()
   }
 
-  async unfollow(jwt: string, followedKey: string) {
+  async unfollow(followedKey: string) {
     const res = await fetch(`${this.baseUrl}/commands/unfollow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, followedKey }),
+      body: JSON.stringify({ jwt: this.accessToken, followedKey }),
       mode: 'cors'
     })
     return res.text()

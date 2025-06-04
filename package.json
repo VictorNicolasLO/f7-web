@@ -19,7 +19,8 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.4",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^6.30.1"
+    "react-router-dom": "^6.30.1",
+    "ulid": "^3.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

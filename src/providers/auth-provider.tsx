@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useApi } from '../hooks/user-api';
-
+import { getIatFromJWT } from '../utils/jwt-utils';
+getIatFromJWT()
 export type AuthenticatedState = {
     status: 'authenticated';
     username: string;
@@ -18,10 +19,11 @@ export type AuthState = {
     status: 'unauthenticated';
 } | AuthenticatedState
 
-
+let timeout: ReturnType<typeof setTimeout> | null = null;
 const useAuthProvider = () => {
     const [authState, setAuthState] = useState<AuthState>({ status: 'not-ready' });
     const api = useApi();
+
     const login = useCallback(async (username: string, password: string) => {
         if (authState.status === 'authenticated') {
             throw new Error('Already authenticated');
@@ -40,6 +42,7 @@ const useAuthProvider = () => {
             accessToken,
             refreshToken: refreshToken.refreshToken,
         }
+        api.setAuthTokens(accessToken, refreshToken.refreshToken);
         localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
         setAuthState(nextAuthState);
     }, [setAuthState])
@@ -50,6 +53,7 @@ const useAuthProvider = () => {
         if (storedAuth) {
             const parsedAuth = JSON.parse(storedAuth) as AuthState;
             if (parsedAuth.status === 'authenticated') {
+                api.setAuthTokens(parsedAuth.accessToken, parsedAuth.refreshToken);
                 setAuthState(parsedAuth);
             } else {
                 setAuthState({ status: 'unauthenticated' });
