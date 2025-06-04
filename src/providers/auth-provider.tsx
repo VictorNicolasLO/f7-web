@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useApi } from '../hooks/user-api';
-import { getIatFromJWT } from '../utils/jwt-utils';
-getIatFromJWT()
+import { getExpFromJWT } from '../utils/jwt-utils';
+
 export type AuthenticatedState = {
     status: 'authenticated';
     username: string;
@@ -19,10 +19,34 @@ export type AuthState = {
     status: 'unauthenticated';
 } | AuthenticatedState
 
+
+
 let timeout: ReturnType<typeof setTimeout> | null = null;
 const useAuthProvider = () => {
     const [authState, setAuthState] = useState<AuthState>({ status: 'not-ready' });
     const api = useApi();
+
+    // Helper to set refresh timeout
+    const setRefreshTimeout = useCallback((accessToken: string) => {
+        if(authState.status !== 'authenticated') {
+            return;
+        }
+        if (timeout) clearTimeout(timeout);
+        const exp = getExpFromJWT(accessToken);
+        if (!exp) return;
+        const now = Math.floor(Date.now() / 1000);
+        const ms = Math.max((exp - now - 5) * 1000, 0);
+        timeout = setTimeout(async () => {
+            const accessToken = await api.callRefreshToken(authState.refreshToken);
+            api.setAuthTokens(accessToken, authState.refreshToken);
+            const nextAuthState: AuthenticatedState = {
+                ...authState,
+                accessToken,
+            }
+            localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
+            setAuthState(nextAuthState);
+        }, ms);
+    }, []);
 
     const login = useCallback(async (username: string, password: string) => {
         if (authState.status === 'authenticated') {
@@ -45,7 +69,8 @@ const useAuthProvider = () => {
         api.setAuthTokens(accessToken, refreshToken.refreshToken);
         localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
         setAuthState(nextAuthState);
-    }, [setAuthState])
+        setRefreshTimeout(accessToken);
+    }, [setAuthState, setRefreshTimeout])
 
 
     useEffect(()=>{
@@ -55,12 +80,14 @@ const useAuthProvider = () => {
             if (parsedAuth.status === 'authenticated') {
                 api.setAuthTokens(parsedAuth.accessToken, parsedAuth.refreshToken);
                 setAuthState(parsedAuth);
+                setRefreshTimeout(parsedAuth.accessToken);
             } else {
                 setAuthState({ status: 'unauthenticated' });
             }
         } else {
             setAuthState({ status: 'unauthenticated' });
         }
+        return () => { if (timeout) clearTimeout(timeout); };
     }, [])
 
 
