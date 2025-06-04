@@ -24,7 +24,7 @@ const SearchInput = memo(() => {
 
 const TopBar = ({ onChangeTab, tab, username, userId }: TopBarProps) => {
     console.log('render topbar', tab)
-    const userIdBase64 = useMemo(() => toBase64Url(userId), [userId])
+
     return (
         <Flex position="sticky" pos={'sticky'} top={0} zIndex={1000} bg="bg/90" backdropBlur={'lg'} backdropFilter={'blur(2px)'} flexDirection={'column'}>
             <Grid templateColumns={'1fr auto 1fr'} padding={4}>
@@ -57,7 +57,7 @@ const TopBar = ({ onChangeTab, tab, username, userId }: TopBarProps) => {
                     <Flex justify={'flex-end'} align="center" gap={4} minW={'300px'} height={'100%'}>
                         <Heading size="md">Welcome {' '}
                             <Link colorPalette={'teal'} asChild>
-                                <RouterLink to={`/profile-timeline/${userIdBase64}`}>{username}</RouterLink>
+                                <RouterLink to={`/profile-timeline/${userId}`}>{username}</RouterLink>
                             </Link>
                         </Heading>
                     </Flex>

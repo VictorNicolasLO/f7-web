@@ -26,7 +26,7 @@ const rootEl = document.getElementById('root');
 if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
-    <React.StrictMode>
+    // <React.StrictMode>
       <ChakraProvider value={system}>
         <ColorModeProvider>
           <ApiProvider api={api}>
@@ -37,7 +37,7 @@ if (rootEl) {
         </ColorModeProvider>
       </ChakraProvider>
 
-    </React.StrictMode>,
+    // </React.StrictMode>,
   );
 }
 

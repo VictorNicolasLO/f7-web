@@ -47,6 +47,7 @@ export class Flash7Api {
   }
 
   async activateUser(jwt?: string) {
+    console.log('Activating user with JWT:')
     const res = await fetch(`${this.baseUrl}/commands/activate-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

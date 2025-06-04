@@ -3,12 +3,12 @@ import Post from "../../../../components/post"
 import { LuStar, LuLogOut } from "react-icons/lu"
 import { useParams } from 'react-router-dom'
 import { useAuthenticatedAuth } from "../../../../hooks/use-auth"
-import { fromBase64Url } from "../../../../utils/base64-serdes"
+
 const ProfileTimeline = () => {
     const params = useParams()
     const auth = useAuthenticatedAuth()
 
-    const userIdParam = fromBase64Url(params.id as string)
+    const userIdParam = params.id as string
     const isCurrentUser = userIdParam === auth.state.userIdB64
     const username = isCurrentUser ? auth.state.username : params.id
 
@@ -29,7 +29,16 @@ const ProfileTimeline = () => {
             }
 
             <Flex flexDirection={'column'} gap={8} alignItems={'center'} justifyContent={'center'}>
-                {new Array(10).fill(0).map((_, i) => <Post />)}
+                {new Array(10).fill(0).map((_, i) => <Post 
+                comments={0}
+                likes={0}   
+                views={0}
+                postId={`post-${i}`}
+                userId={'userIdParam'}
+                username={'username'}
+                content={`This is a post number ${i + 1} from ${'username'}`}
+                key={`post-${i}`}
+                />)}
             </Flex>
 
         </Flex>

@@ -22,31 +22,54 @@ export type AuthState = {
 
 
 let timeout: ReturnType<typeof setTimeout> | null = null;
+let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
 const useAuthProvider = () => {
     const [authState, setAuthState] = useState<AuthState>({ status: 'not-ready' });
     const api = useApi();
 
-    // Helper to set refresh timeout
-    const setRefreshTimeout = useCallback((accessToken: string) => {
-        if(authState.status !== 'authenticated') {
+    const logout = useCallback(() => {
+        localStorage.removeItem('flash7-auth');
+        window.location.reload();
+    }, [setAuthState]);
+
+    // Helper to set refresh timeout for access token
+    const setRefreshTimeout = useCallback((authStateForRefresh: AuthState) => {
+        if(authStateForRefresh.status !== 'authenticated') {
             return;
         }
         if (timeout) clearTimeout(timeout);
-        const exp = getExpFromJWT(accessToken);
+        const exp = getExpFromJWT(authStateForRefresh.accessToken);
+        console.log('Setting refresh timeout for access token', exp);
         if (!exp) return;
         const now = Math.floor(Date.now() / 1000);
         const ms = Math.max((exp - now - 5) * 1000, 0);
+        console.log(ms, 'ms until access token expiry');
         timeout = setTimeout(async () => {
-            const accessToken = await api.callRefreshToken(authState.refreshToken);
-            api.setAuthTokens(accessToken, authState.refreshToken);
+            console.log('Refreshing access token');
+            const accessToken = await api.callRefreshToken(authStateForRefresh.refreshToken);
+            api.setAuthTokens(accessToken, authStateForRefresh.refreshToken);
             const nextAuthState: AuthenticatedState = {
-                ...authState,
+                ...authStateForRefresh,
                 accessToken,
             }
             localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
             setAuthState(nextAuthState);
+            setRefreshTimeout(accessToken);
         }, ms);
-    }, []);
+    }, [authState, api]);
+
+    // Helper to set timeout for refresh token expiry (logout)
+    const setRefreshTokenExpiryTimeout = useCallback((refreshToken: string) => {
+        if (refreshTimeout) clearTimeout(refreshTimeout);
+        const exp = getExpFromJWT(refreshToken);
+        if (!exp) return;
+        const now = Math.floor(Date.now() / 1000);
+        const ms = Math.max((exp - now - 5) * 1000, 0);
+        console.log(ms, 'ms until refresh token expiry');
+        refreshTimeout = setTimeout(() => {
+            logout();
+        }, ms);
+    }, [logout]);
 
     const login = useCallback(async (username: string, password: string) => {
         if (authState.status === 'authenticated') {
@@ -69,9 +92,9 @@ const useAuthProvider = () => {
         api.setAuthTokens(accessToken, refreshToken.refreshToken);
         localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
         setAuthState(nextAuthState);
-        setRefreshTimeout(accessToken);
-    }, [setAuthState, setRefreshTimeout])
-
+        setRefreshTimeout(nextAuthState);
+        setRefreshTokenExpiryTimeout(refreshToken.refreshToken);
+    }, [setAuthState, setRefreshTimeout, setRefreshTokenExpiryTimeout])
 
     useEffect(()=>{
         const storedAuth = localStorage.getItem('flash7-auth');
@@ -80,21 +103,20 @@ const useAuthProvider = () => {
             if (parsedAuth.status === 'authenticated') {
                 api.setAuthTokens(parsedAuth.accessToken, parsedAuth.refreshToken);
                 setAuthState(parsedAuth);
-                setRefreshTimeout(parsedAuth.accessToken);
+                setRefreshTimeout(parsedAuth);
+                setRefreshTokenExpiryTimeout(parsedAuth.refreshToken);
             } else {
                 setAuthState({ status: 'unauthenticated' });
             }
         } else {
             setAuthState({ status: 'unauthenticated' });
         }
-        return () => { if (timeout) clearTimeout(timeout); };
+        return () => {
+            if (timeout) clearTimeout(timeout);
+            if (refreshTimeout) clearTimeout(refreshTimeout);
+        };
     }, [])
 
-
-    const logout = useCallback(() => {
-        localStorage.removeItem('flash7-auth');
-        window.location.reload()
-    }, [setAuthState]);
 
     return {
         login,
