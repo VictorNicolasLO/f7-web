@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 
-export const useTopbar = (newsPath: string, personalFeedPath: string) => {
+export const useTopbar = (newsPath: string, personalFeedPath: string, username:string, userId:string) => {
     
     const navigate = useNavigate()
     const path = useLocation().pathname
@@ -19,5 +19,7 @@ export const useTopbar = (newsPath: string, personalFeedPath: string) => {
     return {
         onChangeTab,
         tab,
+        username,
+        userId
     }
 }

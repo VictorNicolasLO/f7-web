@@ -1,8 +1,9 @@
 import {Button, Field, Flex, Heading, Input, Stack, } from "@chakra-ui/react"
 import { PasswordInput } from "../../components/ui/password-input"
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+
 import { memo } from "react"
+import { useAuth } from "../../hooks/use-auth"
 
 
 interface FormValues {
@@ -11,14 +12,26 @@ interface FormValues {
 }
 
 const Login = () => {
-  console.log('render')
+  const auth = useAuth()
+  const authStatus = auth.state.status
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError
   } = useForm<FormValues>()
-  const navigate = useNavigate()
-  const onSubmit = handleSubmit((data: FormValues) => navigate('/home/feed/news'))
+
+  const onSubmit = handleSubmit((data: FormValues) => {
+    if(data.username.trim() === '') {
+      setError('username', { type: 'manual', message: 'Username is required' })
+      return
+    }
+    if(data.password.trim() === '') {
+      setError('password', { type: 'manual', message: 'Passkey is required' })
+      return
+    }
+    auth.login(data.username, data.password)
+  } )
   return (
     <Flex align={"center"} justify="center" height="100vh">
       <form onSubmit={onSubmit}>
@@ -36,8 +49,9 @@ const Login = () => {
             <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
             <Field.HelperText>Your passkey will be always the same for your user.</Field.HelperText>
           </Field.Root>
+          
 
-          <Button type="submit">Access</Button>
+          <Button type="submit" loading={authStatus==='authenticating'} loadingText="Accessing...">Access</Button>
         </Stack>
       </form>
     </Flex>

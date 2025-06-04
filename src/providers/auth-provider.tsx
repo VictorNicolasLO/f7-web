@@ -1,38 +1,73 @@
-import { createContext, ReactNode, useCallback, useState } from 'react'
+import { createContext, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useApi } from '../hooks/user-api';
 
-
-export type AuthState = {
-    isAuthenticated: false;
-} | {
-    isAuthenticated: true;
+export type AuthenticatedState = {
+    status: 'authenticated';
     username: string;
     userId: string;
     refreshToken: string;
     accessToken: string;
+    userIdB64: string;
 }
+
+export type AuthState = {
+    status: 'not-ready';
+} | {
+    status: 'authenticating';
+} | {
+    status: 'unauthenticated';
+} | AuthenticatedState
 
 
 const useAuthProvider = () => {
-    const [authState, setAuthState] = useState<AuthState>();
+    const [authState, setAuthState] = useState<AuthState>({ status: 'not-ready' });
     const api = useApi();
     const login = useCallback(async (username: string, password: string) => {
+        if (authState.status === 'authenticated') {
+            throw new Error('Already authenticated');
+        }
+        setAuthState({ status: 'authenticating' });
         const response = await api.auth(username, password);
         if (response.error) {
             throw new Error(response.error);
         }
         const { accessToken, refreshToken } = response;
-        setAuthState({
-            isAuthenticated: true,
+        const nextAuthState: AuthState = {
+            status: "authenticated",
             username: refreshToken.publicUsername,
             userId: refreshToken.userId,
+            userIdB64: refreshToken.userIdB64,
             accessToken,
-            refreshToken: refreshToken.refreshToken
-        });
+            refreshToken: refreshToken.refreshToken,
+        }
+        localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
+        setAuthState(nextAuthState);
     }, [setAuthState])
+
+
+    useEffect(()=>{
+        const storedAuth = localStorage.getItem('flash7-auth');
+        if (storedAuth) {
+            const parsedAuth = JSON.parse(storedAuth) as AuthState;
+            if (parsedAuth.status === 'authenticated') {
+                setAuthState(parsedAuth);
+            } else {
+                setAuthState({ status: 'unauthenticated' });
+            }
+        } else {
+            setAuthState({ status: 'unauthenticated' });
+        }
+    }, [])
+
+
+    const logout = useCallback(() => {
+        localStorage.removeItem('flash7-auth');
+        window.location.reload()
+    }, [setAuthState]);
 
     return {
         login,
+        logout,
         state: authState,
     }
 

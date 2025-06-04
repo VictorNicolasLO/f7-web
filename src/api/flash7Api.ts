@@ -10,10 +10,11 @@ export class Flash7Api {
 
   constructor(config: ApiConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, '')
+
   }
 
   async status() {
-    const res = await fetch(`${this.baseUrl}/api/status`)
+    const res = await fetch(`${this.baseUrl}/api/status`, { mode: 'cors' })
     return res.text()
   }
 
@@ -21,8 +22,10 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/auth`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password }),
+      mode: 'cors'
     })
+    console.log(res)
     return res.json()
   }
 
@@ -30,7 +33,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/refresh-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken })
+      body: JSON.stringify({ refreshToken }),
+      mode: 'cors'
     })
     return res.json()
   }
@@ -39,7 +43,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/activate-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt })
+      body: JSON.stringify({ jwt }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -48,7 +53,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/post`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey, content })
+      body: JSON.stringify({ jwt, postKey, content }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -57,7 +63,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/like`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey })
+      body: JSON.stringify({ jwt, postKey }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -66,7 +73,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/view`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey })
+      body: JSON.stringify({ jwt, postKey }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -75,7 +83,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/comment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, postKey, content })
+      body: JSON.stringify({ jwt, postKey, content }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -84,7 +93,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/follow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, followedKey })
+      body: JSON.stringify({ jwt, followedKey }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -93,7 +103,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/unfollow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, followedKey })
+      body: JSON.stringify({ jwt, followedKey }),
+      mode: 'cors'
     })
     return res.text()
   }
@@ -102,7 +113,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/personal-feed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userKey, startSortKey, limit })
+      body: JSON.stringify({ userKey, startSortKey, limit }),
+      mode: 'cors'
     })
     return res.json()
   }
@@ -111,7 +123,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/global-feed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startSortKey, limit })
+      body: JSON.stringify({ startSortKey, limit }),
+      mode: 'cors'
     })
     return res.json()
   }
@@ -120,7 +133,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ postKey, startSortKey, limit })
+      body: JSON.stringify({ postKey, startSortKey, limit }),
+      mode: 'cors'
     })
     return res.json()
   }
@@ -129,7 +143,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/active-users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ limit, postKey, textSearch })
+      body: JSON.stringify({ limit, postKey, textSearch }),
+      mode: 'cors'
     })
     return res.json()
   }
@@ -138,7 +153,8 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/user-timeline`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userKey, startSortKey, limit })
+      body: JSON.stringify({ userKey, startSortKey, limit }),
+      mode: 'cors'
     })
     return res.json()
   }

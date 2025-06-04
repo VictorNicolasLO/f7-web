@@ -9,7 +9,7 @@ const App = () => {
   useEffect(() => {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
-   // setColorMode('light');
+   setColorMode('light');
   }
   , [setColorMode]);
   return (

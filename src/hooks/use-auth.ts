@@ -1,6 +1,6 @@
-import { useCallback, useContext, useState } from "react";
-import { AuthContext } from "../providers/auth-provider";
-import { useApi } from "./user-api";
+import {  useContext } from "react";
+import { AuthContext, AuthenticatedState } from "../providers/auth-provider";
+
 
 
 
@@ -10,4 +10,13 @@ export const useAuth = ()=> {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return authContext;
+}
+
+export const useAuthenticatedAuth = () => {
+    const auth = useAuth();
+    if (auth.state.status !== 'authenticated') {
+        throw new Error('User is not authenticated');
+    }
+
+    return {...auth, state: auth.state as AuthenticatedState};
 }

@@ -1,11 +1,14 @@
-import { Flex, Grid, GridItem, Heading,Separator, Tabs } from "@chakra-ui/react"
-import { memo } from "react"
+import { Flex, Grid, GridItem, Heading, Link, Separator, Tabs } from "@chakra-ui/react"
+import { memo, useMemo } from "react"
 import { LuStar, LuGlobe } from "react-icons/lu"
 import ProfileSearcher from "../profile-searcher"
-
+import { toBase64Url } from "../../utils/base64-serdes"
+import { Link as RouterLink } from "react-router-dom"
 export type TopBarProps = {
     onChangeTab?: (tab: string) => void,
-    tab?: string
+    tab?: string,
+    username: string,
+    userId: string
 }
 
 const SearchInput = memo(() => {
@@ -19,8 +22,9 @@ const SearchInput = memo(() => {
     </GridItem>)
 })
 
-const TopBar = ({ onChangeTab, tab }: TopBarProps) => {
+const TopBar = ({ onChangeTab, tab, username, userId }: TopBarProps) => {
     console.log('render topbar', tab)
+    const userIdBase64 = useMemo(() => toBase64Url(userId), [userId])
     return (
         <Flex position="sticky" pos={'sticky'} top={0} zIndex={1000} bg="bg/90" backdropBlur={'lg'} backdropFilter={'blur(2px)'} flexDirection={'column'}>
             <Grid templateColumns={'1fr auto 1fr'} padding={4}>
@@ -47,6 +51,15 @@ const TopBar = ({ onChangeTab, tab }: TopBarProps) => {
                             </Tabs.List>
 
                         </Tabs.Root>
+                    </Flex>
+                </GridItem>
+                <GridItem gridColumn={'3'}>
+                    <Flex justify={'flex-end'} align="center" gap={4} minW={'300px'} height={'100%'}>
+                        <Heading size="md">Welcome {' '}
+                            <Link colorPalette={'teal'} asChild>
+                                <RouterLink to={`/profile-timeline/${userIdBase64}`}>{username}</RouterLink>
+                            </Link>
+                        </Heading>
                     </Flex>
                 </GridItem>
             </Grid>
