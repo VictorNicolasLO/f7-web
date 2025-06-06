@@ -46,7 +46,7 @@ const useAuthProvider = () => {
         console.log(ms, 'ms until access token expiry');
         timeout = setTimeout(async () => {
             console.log('Refreshing access token');
-            const accessToken = await api.callRefreshToken(authStateForRefresh.refreshToken);
+            const {accessToken} = await api.callRefreshToken(authStateForRefresh.refreshToken);
             api.setAuthTokens(accessToken, authStateForRefresh.refreshToken);
             const nextAuthState: AuthenticatedState = {
                 ...authStateForRefresh,

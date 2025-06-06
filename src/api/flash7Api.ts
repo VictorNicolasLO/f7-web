@@ -127,11 +127,11 @@ export class Flash7Api {
     return res.json()
   }
 
-  async globalFeed(startSortKey?: string, limit?: number) {
+  async globalFeed(startSortKey?: string, limit?: number, reverse?: boolean) {
     const res = await fetch(`${this.baseUrl}/queries/global-feed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startSortKey, limit }),
+      body: JSON.stringify({ startSortKey, limit, reverse, jwt: this.accessToken }),
       mode: 'cors'
     })
     return res.json()

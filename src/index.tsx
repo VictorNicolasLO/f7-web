@@ -14,7 +14,13 @@ import { Flash7Api } from './api/flash7Api';
 import { AuthProvider } from './providers/auth-provider';
 const config = defineConfig({
   theme: {
-
+     tokens: {
+      colors:{
+        'flash7': {
+         value: '#94A89A'
+        }
+      }
+     }
   }
 })
 const api = new Flash7Api({

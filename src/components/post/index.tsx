@@ -1,7 +1,10 @@
 import { Card, Flex, IconButton, Link, Stack, Text } from "@chakra-ui/react"
-import { memo } from "react"
+import { formatDistanceToNow } from "date-fns"
+import { forwardRef, memo, useMemo } from "react"
 import { LuThumbsUp, LuEye, LuMessageCircle } from "react-icons/lu"
-import {Link as RouterLink} from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
+import { decodeTime, isValid } from 'ulid'
+
 type PostProps = {
     content: string
     username: string,
@@ -9,36 +12,48 @@ type PostProps = {
     postId: string,
     likes: number,
     comments: number,
-    views: number
+    views: number,
+    onLike?: (postId: string) => any,
+    hasLike?: boolean
+    hasView?: boolean,
+    loadingLike?: boolean,
+    setRef?: (postId: string, ref: any) => void
 }
 
-const Post = memo(({content,
+const Post = memo(({ content,
     username,
     userId,
     postId,
     likes,
     comments,
-    views
-} : PostProps)  => {
-
+    views,
+    onLike,
+    hasLike,
+    hasView,
+setRef
+}: PostProps) => {
+    const ulidTime = useMemo(() => isValid(postId) ? new Date(decodeTime(postId)) : new Date(), [postId])
     const cardJsx = <Card.Root size={'lg'} >
-        <Card.Body>
+        <Card.Body gap={1} >
             <Card.Title><Link href="#">“{content}”</Link></Card.Title>
-            <Card.Description>
-            <Link asChild>
-            <RouterLink to={`/profile-timeline/${userId}`}>@{username}</RouterLink>
-                
-            </Link>
-            </Card.Description>
+            <Stack gap={0}>
+                <Link asChild textStyle={'sm'}>
+                    <RouterLink to={`/profile-timeline/${userId}`}>@{username}</RouterLink>
+                </Link>
+                {<Text textStyle={'xs'}>{formatDistanceToNow(ulidTime, { addSuffix: true })}</Text>}
+            </Stack>
+
+
+
         </Card.Body>
 
     </Card.Root>
     return (
-        <Flex align={"center"} justify="center" >
-            <Stack width={'xl'} maxWidth={'xl'}  >
-            
-                    {cardJsx}
-              
+        <Flex align={"center"} justify="center" ref={(r)=> setRef && setRef(postId, r) } width='100%' maxWidth={'xl'} paddingX={{smDown: 2}}>
+            <Stack w='100%' >
+
+                {cardJsx}
+
                 <Stack direction={'row'} gap={1} align="center" justify="flex-start">
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
                         <IconButton aria-label="Search database" variant={'ghost'}>
@@ -47,13 +62,13 @@ const Post = memo(({content,
                         <Text userSelect={'none'}>{comments || 0}</Text>
                     </Stack>
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
-                        <IconButton aria-label="Search database" variant={'ghost'}>
+                        <IconButton aria-label="Search database" variant={'ghost'} onClick={() => onLike && onLike(postId)} color={hasLike ? 'flash7' : "current"} >
                             <LuThumbsUp />
                         </IconButton>
                         <Text userSelect={'none'}>{likes || 0}</Text>
                     </Stack>
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
-                        <IconButton aria-label="Search database" variant={'ghost'} >
+                        <IconButton aria-label="Search database" variant={hasView ? 'solid' : 'ghost'} >
                             <LuEye />
                         </IconButton>
                         <Text userSelect={'none'}>{views || 0}</Text>

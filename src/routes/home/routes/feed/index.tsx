@@ -6,6 +6,7 @@ import { useInput } from "../../../../hooks/use-input"
 import { useApi } from "../../../../hooks/user-api"
 import { ulid } from "ulid"
 
+
 const Feed = () => {
   const input = useInput('')
   const api = useApi()
@@ -18,6 +19,7 @@ const Feed = () => {
     await api.post(ulid(), value )
     input.reset()
     setLoading(false)
+    
   }, [])
   return (
     <Stack gap={8}>

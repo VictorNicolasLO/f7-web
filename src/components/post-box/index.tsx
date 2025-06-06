@@ -20,8 +20,8 @@ const PostBox = ({
     value,
     onSubmit
 }: PostBoxProps) => {
-    return <Flex align={"center"} justify="center">
-        <Stack width={'xl'} maxWidth={'xl'}  >
+    return <Flex align={"center"} justify="center" width='100%' maxWidth={'xl'} paddingX={{smDown: 2}}>
+        <Stack w='100%' >
             <Textarea disabled={loading} placeholder={placeholder ?? "This will disappear in 7 days. Say anything..."} size={'xl'} resize="none" maxLength={280} autoresize={true} maxH="8lh" onInput={(e) => onValueChange && onValueChange((e.target as HTMLTextAreaElement).value)} value={value}/>
             <Button alignSelf={'self-start'} type="button" variant={'outline'} size={'md'} loading={loading} loadingText={loadingText ?? 'Posting...'} onClick={()=>onSubmit && onSubmit(value)}>{buttonText ?? 'Post'} <LuPen/></Button>
         </Stack>
