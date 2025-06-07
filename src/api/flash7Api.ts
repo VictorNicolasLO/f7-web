@@ -51,7 +51,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/activate-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt : jwt || this.accessToken }),
+      body: JSON.stringify({ jwt: jwt || this.accessToken }),
       mode: 'cors'
     })
     return res.text()
@@ -117,11 +117,11 @@ export class Flash7Api {
     return res.text()
   }
 
-  async personalFeed(userKey: string, startSortKey?: string, limit?: number) {
+  async personalFeed(startSortKey?: string, limit?: number, reverse?: boolean) {
     const res = await fetch(`${this.baseUrl}/queries/personal-feed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userKey, startSortKey, limit }),
+      body: JSON.stringify({ startSortKey, limit, jwt: this.accessToken, reverse }),
       mode: 'cors'
     })
     return res.json()
@@ -137,11 +137,11 @@ export class Flash7Api {
     return res.json()
   }
 
-  async comments(postKey: string, startSortKey?: string, limit?: number) {
+  async comments(postKey: string, startSortKey?: string, limit?: number, reverse?: boolean) {
     const res = await fetch(`${this.baseUrl}/queries/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ postKey, startSortKey, limit }),
+      body: JSON.stringify({ postKey, startSortKey, limit, reverse }),
       mode: 'cors'
     })
     return res.json()
@@ -157,11 +157,31 @@ export class Flash7Api {
     return res.json()
   }
 
-  async userTimeline(userKey: string, startSortKey?: string, limit?: number) {
+  async userTimeline(userKey: string, startSortKey?: string, limit?: number, reverse?: boolean) {
     const res = await fetch(`${this.baseUrl}/queries/user-timeline`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userKey, startSortKey, limit }),
+      body: JSON.stringify({ userKey, startSortKey, limit, reverse, jwt: this.accessToken }),
+      mode: 'cors'
+    })
+    return res.json()
+  }
+
+  async userByKey(userKey: string) {
+    const res = await fetch(`${this.baseUrl}/queries/user-by-key`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userKey }),
+      mode: 'cors'
+    })
+    return res.json()
+  }
+
+  async postByKey(postKey: string) {
+    const res = await fetch(`${this.baseUrl}/queries/post-by-key`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postKey }),
       mode: 'cors'
     })
     return res.json()

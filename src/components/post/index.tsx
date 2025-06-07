@@ -30,26 +30,27 @@ const Post = memo(({ content,
     onLike,
     hasLike,
     hasView,
-setRef
+    setRef
 }: PostProps) => {
     const ulidTime = useMemo(() => isValid(postId) ? new Date(decodeTime(postId)) : new Date(), [postId])
     const cardJsx = <Card.Root size={'lg'} >
         <Card.Body gap={1} >
-            <Card.Title><Link href="#">“{content}”</Link></Card.Title>
+            <Card.Title>
+                <Link asChild>
+                    <RouterLink to={`/post-view/${postId}`}>“{content}”</RouterLink>
+                </Link>
+            </Card.Title>
             <Stack gap={0}>
                 <Link asChild textStyle={'sm'}>
                     <RouterLink to={`/profile-timeline/${userId}`}>@{username}</RouterLink>
                 </Link>
                 {<Text textStyle={'xs'}>{formatDistanceToNow(ulidTime, { addSuffix: true })}</Text>}
             </Stack>
-
-
-
         </Card.Body>
 
     </Card.Root>
     return (
-        <Flex align={"center"} justify="center" ref={(r)=> setRef && setRef(postId, r) } width='100%' maxWidth={'xl'} paddingX={{smDown: 2}}>
+        <Flex align={"center"} justify="center" ref={(r) => setRef && setRef(postId, r)} width='100%' maxWidth={'xl'} paddingX={{ smDown: 2 }}>
             <Stack w='100%' >
 
                 {cardJsx}

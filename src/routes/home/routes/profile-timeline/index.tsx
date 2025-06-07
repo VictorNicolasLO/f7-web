@@ -1,17 +1,43 @@
-import { Button, Flex, Text } from "@chakra-ui/react"
+import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
 import Post from "../../../../components/post"
 import { LuStar, LuLogOut } from "react-icons/lu"
 import { useParams } from 'react-router-dom'
 import { useAuthenticatedAuth } from "../../../../hooks/use-auth"
+import { useTimeline } from "../../../../hooks/use-timeline"
+import { useEffect, useState } from "react"
+import { useApi } from "../../../../hooks/user-api"
 
 const ProfileTimeline = () => {
     const params = useParams()
     const auth = useAuthenticatedAuth()
-
+    const api = useApi()
+    const [fetchedUsername, setFetchedUsername] = useState('')
     const userIdParam = params.id as string
     const isCurrentUser = userIdParam === auth.state.userIdB64
-    const username = isCurrentUser ? auth.state.username : params.id
 
+
+    const {
+        posts,
+        upToDate,
+        loading,
+        setRef,
+        loaderRef,
+        handleLike,
+        loadinLikes
+    } = useTimeline({ type: 'PROFILE', userKey: userIdParam })
+
+    useEffect(() => {
+        (async () => {
+            if (!isCurrentUser) {
+                const fetched = await api.userByKey(userIdParam)
+                console.log('Fetched user:', fetched.data.data.username)
+                setFetchedUsername(fetched.data.data.username)
+            }   
+        })();
+
+    }, [isCurrentUser, userIdParam]);
+
+    const username = isCurrentUser ? auth.state.username : fetchedUsername
     return (
         <Flex direction={'column'} gap={8} w="100%" alignItems={'center'}>
             <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
@@ -28,17 +54,24 @@ const ProfileTimeline = () => {
                     </Flex>
             }
 
-            <Flex flexDirection={'column'} gap={8} alignItems={'center'} justifyContent={'center'}>
-                {new Array(10).fill(0).map((_, i) => <Post 
-                comments={0}
-                likes={0}   
-                views={0}
-                postId={`post-${i}`}
-                userId={'userIdParam'}
-                username={'username'}
-                content={`This is a post number ${i + 1} from ${'username'}`}
-                key={`post-${i}`}
+            <Flex flexDirection={'column'} gap={8} alignItems={'center'} justifyContent={'center'} width="100%">
+                {posts.map((post) => <Post
+                    key={post.key}
+                    content={post.data.content}
+                    comments={post.data.comments}
+                    views={post.data.views}
+                    likes={post.data.likes}
+                    postId={post.key}
+                    userId={post.data.userKey}
+                    username={post.data.username}
+                    onLike={handleLike}
+                    hasLike={post.data.hasLike}
+                    loadingLike={loadinLikes[post.key] || false}
+                    setRef={setRef}
                 />)}
+                {!upToDate && <div >
+                    {loading ? <Spinner size={'xl'} color={'blue.500'} /> : <div ref={loaderRef} style={{ width: '60px', height: '60px' }} />}
+                </div>}
             </Flex>
 
         </Flex>
