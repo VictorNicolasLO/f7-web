@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useApi } from "./user-api"
 import { Flash7Api } from "../api/flash7Api"
 
-export type TimelineOptions = { type: 'GLOBAL' } | { type: 'PROFILE', userKey: string }
+export type TimelineOptions = { type: 'GLOBAL' } | { type: 'PROFILE', userKey: string } | { type: 'PERSONAL_FEED' }
 
 
 const FETCH_POSTS_LIMIT = 10
@@ -11,23 +11,36 @@ const fetchPosts = async (api: Flash7Api, options: TimelineOptions, lastPostKey?
         return await api.globalFeed(lastPostKey, limit, reverse)
     } else if (options.type === 'PROFILE') {
         return await api.userTimeline(options.userKey, lastPostKey, limit, reverse)
+    } else if (options.type === 'PERSONAL_FEED') {
+        return await api.personalFeed(lastPostKey, limit, reverse)
     }
     throw new Error('Invalid timeline options')
 }
 
+
+const defaultState = {
+        posts: [] as any[],
+        loading: false,
+        upToDate: false,
+        loadingLikes: {} as Record<string, boolean>,
+    }
+
 export const useTimeline = (options: TimelineOptions) => {
     const api = useApi()
-    const [posts, setPosts] = useState<any[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
-    const [upToDate, setUpToDate] = useState<boolean>(false)
+    const [state, setState] = useState(defaultState);
     const loaderRef = useRef(null)
-    const [loadinLikes, setLoadingLikes] = useState<Record<string, boolean>>({})
     const postRefs = useRef<Record<string, any>>([]);
     const firstFetchRef = useRef<boolean>(false);
 
     const setRef = useCallback((postId: string, ref: any) => {
         postRefs.current[postId] = ref;
     }, [postRefs]);
+
+    useEffect(() => { 
+        setState(defaultState)
+    }, [
+        options.type === 'PROFILE' && options.userKey
+    ])
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -46,8 +59,7 @@ export const useTimeline = (options: TimelineOptions) => {
             { threshold: 0.75 } // Trigger when 50% is visible
         );
 
-        posts.forEach((item: any) => {
-
+        state.posts.forEach((item: any) => {
             const r = postRefs.current[item.key];
             r.__item = item; // Store the item in the ref for later use
             if (r && !item.data.hasView) {
@@ -58,61 +70,60 @@ export const useTimeline = (options: TimelineOptions) => {
         return () => {
             observer.disconnect();
         };
-    }, [posts, setPosts, api]);
+    }, [state.posts, api]);
 
     const loadMorePosts = useCallback(async () => {
-        if (loading || upToDate) return;
-        setLoading(true)
-        const lastPost = posts[posts.length - 1];
+        if (state.loading || state.upToDate) return;
+        setState(prev => ({ ...prev, loading: true }))
+        const lastPost = state.posts[state.posts.length - 1];
         const news = await fetchPosts(api, options, lastPost?.key, FETCH_POSTS_LIMIT)
         console.log('Loaded from infinite loading', news)
+        if (news.data.length <= 1) {
+            setState(prev => ({ ...prev, upToDate: true, loading: false }));
+            return;
+        }
         if (lastPost) {
-            if (news.data.length === 1) {
-                setUpToDate(true);
-                setLoading(false);
-                return;
-            }
-            setPosts((prevPosts) => [...prevPosts, ...news.data.filter((post: any) => post.key !== lastPost.key)]);
-            if (news.data.length < FETCH_POSTS_LIMIT) {
-                setUpToDate(true);
-            }
+
+            setState(prev => ({
+                ...prev,
+                posts: [...prev.posts, ...news.data.filter((post: any) => post.key !== lastPost.key)],
+                upToDate: news.data.length < FETCH_POSTS_LIMIT ? true : prev.upToDate
+            }));
         } else {
-            setPosts((prevPosts) => [...prevPosts, ...news.data]);
+            setState(prev => ({ ...prev, posts: [...prev.posts, ...news.data] }));
         }
         if (firstFetchRef.current === false) {
             firstFetchRef.current = true;
             console.log('First fetch completed, setting up to date')
-            setLoading(false)
+            setState(prev => ({ ...prev, loading: false }))
         } else {
             console.log('Subsequent fetch completed, setting loading to false')
-            setTimeout(() => { setLoading(false) }, 500)
+            setTimeout(() => { setState(prev => ({ ...prev, loading: false })) }, 500)
         }
-
-
-    }, [posts, loading, api])
-
-
+    }, [state.posts, state.loading, state.upToDate, api])
 
     useEffect(() => {
         const updateTimeline = async () => {
             if (!firstFetchRef.current) {
                 return;
             }
-            const firstPost = posts[0];
+            const firstPost = state.posts[0];
             const news = await fetchPosts(api, options, firstPost?.key, FETCH_POSTS_LIMIT, false)
             console.log('Updating timeline', news)
             if (firstPost) {
-                setPosts((prevPosts) => [...news.data.filter((post: any) => post.key !== firstPost.key), ...prevPosts]);
+                setState(prev => ({
+                    ...prev,
+                    posts: [...news.data.filter((post: any) => post.key !== firstPost.key), ...prev.posts]
+                }));
             } else {
-                setPosts((prevPosts) => [...news.data, ...prevPosts]);
+                setState(prev => ({ ...prev, posts: [...news.data, ...prev.posts] }));
             }
         }
         const newsInterval = setInterval(updateTimeline, 2000)
-        // fetchPosts()
         return () => {
             clearInterval(newsInterval)
         }
-    }, [setPosts, api, posts])
+    }, [api, state.posts])
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -132,39 +143,45 @@ export const useTimeline = (options: TimelineOptions) => {
 
     const handleLike = useCallback(async (postId: string) => {
         console.log('Liking post', postId)
-        setLoadingLikes((prevLikes) => ({ ...prevLikes, [postId]: true }));
+        setState(prev => ({
+            ...prev,
+            loadingLikes: { ...prev.loadingLikes, [postId]: true }
+        }));
         await api.like(postId)
-        setPosts((prevPosts) => prevPosts.map((post) => {
-
-
-            if (post.key === postId) {
-                const isLiked = post.data.hasLike;
-                console.log('Post before like toggle', post)
-                const currentLikes = post.data.likes || 0;
-                return {
-                    ...post,
-                    data: {
-                        ...post.data,
-                        likes: isLiked ? currentLikes - 1 : currentLikes + 1,
-                        hasLike: !isLiked
+        setState(prev => ({
+            ...prev,
+            posts: prev.posts.map((post) => {
+                if (post.key === postId) {
+                    const isLiked = post.data.hasLike;
+                    console.log('Post before like toggle', post)
+                    const currentLikes = post.data.likes || 0;
+                    return {
+                        ...post,
+                        data: {
+                            ...post.data,
+                            likes: isLiked ? currentLikes - 1 : currentLikes + 1,
+                            hasLike: !isLiked
+                        }
                     }
                 }
-            }
-            return post;
-        }))
-        setLoadingLikes((prevLikes) => ({ ...prevLikes, [postId]: false }));
+                return post;
+            })
+        }));
+        setState(prev => ({
+            ...prev,
+            loadingLikes: { ...prev.loadingLikes, [postId]: false }
+        }));
     }, [api])
 
-
-    console.log(posts)
+    console.log(state.posts)
     return {
-        posts,
-        loading,
-        upToDate,
+        posts: state.posts,
+        loading: state.loading,
+        upToDate: state.upToDate,
         loaderRef,
         loadMorePosts,
         setRef,
         handleLike,
-        loadinLikes
+        loadingLikes: state.loadingLikes
     }
 }

@@ -4,7 +4,7 @@ import { LuStar, LuLogOut } from "react-icons/lu"
 import { useParams } from 'react-router-dom'
 import { useAuthenticatedAuth } from "../../../../hooks/use-auth"
 import { useTimeline } from "../../../../hooks/use-timeline"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useApi } from "../../../../hooks/user-api"
 
 const ProfileTimeline = () => {
@@ -23,7 +23,7 @@ const ProfileTimeline = () => {
         setRef,
         loaderRef,
         handleLike,
-        loadinLikes
+        loadingLikes
     } = useTimeline({ type: 'PROFILE', userKey: userIdParam })
 
     useEffect(() => {
@@ -36,6 +36,12 @@ const ProfileTimeline = () => {
         })();
 
     }, [isCurrentUser, userIdParam]);
+
+    const follow = useCallback(async () => {
+        if (isCurrentUser) return;
+        await api.follow(userIdParam);
+        console.log('Followed user:', userIdParam);
+    }, [api, userIdParam])
 
     const username = isCurrentUser ? auth.state.username : fetchedUsername
     return (
@@ -50,7 +56,7 @@ const ProfileTimeline = () => {
                     </Flex>
                     :
                     <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'flex-end'} justifyContent={'flex-end'}>
-                        <Button variant={'outline'} size={'sm'}>Follow <LuStar /></Button>
+                        <Button variant={'outline'} size={'sm'} onClick={follow}>Follow <LuStar /></Button>
                     </Flex>
             }
 
@@ -66,7 +72,7 @@ const ProfileTimeline = () => {
                     username={post.data.username}
                     onLike={handleLike}
                     hasLike={post.data.hasLike}
-                    loadingLike={loadinLikes[post.key] || false}
+                    loadingLike={loadingLikes[post.key] || false}
                     setRef={setRef}
                 />)}
                 {!upToDate && <div >

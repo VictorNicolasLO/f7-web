@@ -1,4 +1,4 @@
-import { Card, Flex, IconButton, Link, Stack, Text } from "@chakra-ui/react"
+import { Button, Card, Flex, IconButton, Link, Stack, Text } from "@chakra-ui/react"
 import { formatDistanceToNow } from "date-fns"
 import { forwardRef, memo, useMemo } from "react"
 import { LuThumbsUp, LuEye, LuMessageCircle } from "react-icons/lu"
@@ -55,24 +55,25 @@ const Post = memo(({ content,
 
                 {cardJsx}
 
-                <Stack direction={'row'} gap={1} align="center" justify="flex-start">
+                <Stack direction={'row'} gap={0} align="center" justify="flex-start">
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
-                        <IconButton aria-label="Search database" variant={'ghost'}>
-                            <LuMessageCircle />
-                        </IconButton>
-                        <Text userSelect={'none'}>{comments || 0}</Text>
+                        <Button aria-label="Search database" variant={'ghost'} asChild>
+                             <RouterLink to={`/post-view/${postId}`}> <LuMessageCircle /> {comments || 0}</RouterLink>
+                           
+                        </Button>
+                        
                     </Stack>
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
-                        <IconButton aria-label="Search database" variant={'ghost'} onClick={() => onLike && onLike(postId)} color={hasLike ? 'flash7' : "current"} >
-                            <LuThumbsUp />
-                        </IconButton>
-                        <Text userSelect={'none'}>{likes || 0}</Text>
+                        <Button aria-label="Search database" variant={'ghost'} onClick={() => onLike && onLike(postId)} color={hasLike ? 'flash7' : "current"} >
+                            <LuThumbsUp /> <Text userSelect={'none'}>{likes || 0}</Text>
+                        </Button>
+                        
                     </Stack>
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
-                        <IconButton aria-label="Search database" variant={hasView ? 'solid' : 'ghost'} >
-                            <LuEye />
-                        </IconButton>
-                        <Text userSelect={'none'}>{views || 0}</Text>
+                        <Button aria-label="Search database" variant={hasView ? 'solid' : 'ghost'} >
+                            <LuEye /> <Text userSelect={'none'}>{views || 0}</Text>
+                        </Button>
+                        
                     </Stack>
 
                 </Stack>

@@ -12,7 +12,7 @@ const News = () => {
         setRef,
         loaderRef,
         handleLike,
-        loadinLikes
+        loadingLikes
     } = useTimeline({ type : 'GLOBAL'})
     return (
         <>
@@ -28,7 +28,7 @@ const News = () => {
                     username={post.data.username}
                     onLike={handleLike}
                     hasLike={post.data.hasLike}
-                    loadingLike={loadinLikes[post.key] || false}
+                    loadingLike={loadingLikes[post.key] || false}
                     setRef={setRef}
                 />)}
                 {!upToDate && <div >
