@@ -23,6 +23,31 @@ export type AuthState = {
 
 let timeout: ReturnType<typeof setTimeout> | null = null;
 let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
+
+
+const makeGetOrRefreshAccessToken = (authState: AuthState, api: ReturnType<typeof useApi> ,setAuthState: any) => async () => {
+        
+        if (authState.status !== 'authenticated') {
+            throw new Error('Not authenticated');
+        }
+        const exp = getExpFromJWT(authState.accessToken);
+        const now = Math.floor(Date.now() / 1000);
+        if (exp && exp > now + 5) {
+            return authState.accessToken;
+        }
+        console.log('Access token expired, refreshing...');
+        const { accessToken } = await api.callRefreshToken(authState.refreshToken);
+        api.setAuthTokens(accessToken);
+        const nextAuthState: AuthenticatedState = {
+            ...authState,
+            accessToken,
+        }
+        localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
+        setAuthState(nextAuthState);
+        return accessToken;
+    }
+
+
 const useAuthProvider = () => {
     const [authState, setAuthState] = useState<AuthState>({ status: 'not-ready' });
     const api = useApi();
@@ -32,31 +57,36 @@ const useAuthProvider = () => {
         window.location.reload();
     }, [setAuthState]);
 
+ 
+
     // Helper to set refresh timeout for access token
-    const setRefreshTimeout = useCallback((authStateForRefresh: AuthState) => {
-        if(authStateForRefresh.status !== 'authenticated') {
-            return;
-        }
-        if (timeout) clearTimeout(timeout);
-        const exp = getExpFromJWT(authStateForRefresh.accessToken);
-        console.log('Setting refresh timeout for access token', exp);
-        if (!exp) return;
-        const now = Math.floor(Date.now() / 1000);
-        const ms = Math.max((exp - now - 5) * 1000, 0);
-        console.log(ms, 'ms until access token expiry');
-        timeout = setTimeout(async () => {
-            console.log('Refreshing access token');
-            const {accessToken} = await api.callRefreshToken(authStateForRefresh.refreshToken);
-            api.setAuthTokens(accessToken, authStateForRefresh.refreshToken);
-            const nextAuthState: AuthenticatedState = {
-                ...authStateForRefresh,
-                accessToken,
-            }
-            localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
-            setAuthState(nextAuthState);
-            setRefreshTimeout(accessToken);
-        }, ms);
-    }, [authState, api]);
+    // const setRefreshTimeout = useCallback((authStateForRefresh: AuthState) => {
+    //     if(authStateForRefresh.status !== 'authenticated') {
+    //         return;
+    //     }
+    //     if (timeout) clearTimeout(timeout);
+    //     const exp = getExpFromJWT(authStateForRefresh.accessToken);
+    //     console.log('Setting refresh timeout for access token', exp);
+    //     if (!exp) return;
+    //     const now = Math.floor(Date.now() / 1000);
+    //     const ms = Math.max((exp - now - 5) * 1000, 0);
+    //     console.log(ms, 'ms until access token expiry');
+    //     timeout = setTimeout(async () => {
+    //         console.log('Refreshing access token');
+    //         const {accessToken} = await api.callRefreshToken(authStateForRefresh.refreshToken);
+    //         api.setAuthTokens(accessToken, authStateForRefresh.refreshToken);
+    //         const nextAuthState: AuthenticatedState = {
+    //             ...authStateForRefresh,
+    //             accessToken,
+    //         }
+    //         localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
+    //         setAuthState(nextAuthState);
+    //         setRefreshTimeout(accessToken);
+    //     }, ms);
+    // }, [authState, api]);
+
+
+  
 
     // Helper to set timeout for refresh token expiry (logout)
     const setRefreshTokenExpiryTimeout = useCallback((refreshToken: string) => {
@@ -89,21 +119,21 @@ const useAuthProvider = () => {
             accessToken,
             refreshToken: refreshToken.refreshToken,
         }
-        api.setAuthTokens(accessToken, refreshToken.refreshToken);
+        api.setAuthTokens(makeGetOrRefreshAccessToken(nextAuthState, api, setAuthState));
         localStorage.setItem('flash7-auth', JSON.stringify(nextAuthState));
         setAuthState(nextAuthState);
-        setRefreshTimeout(nextAuthState);
+        // setRefreshTimeout(nextAuthState);
         setRefreshTokenExpiryTimeout(refreshToken.refreshToken);
-    }, [setAuthState, setRefreshTimeout, setRefreshTokenExpiryTimeout])
+    }, [setAuthState, setRefreshTokenExpiryTimeout])
 
     useEffect(()=>{
         const storedAuth = localStorage.getItem('flash7-auth');
         if (storedAuth) {
             const parsedAuth = JSON.parse(storedAuth) as AuthState;
             if (parsedAuth.status === 'authenticated') {
-                api.setAuthTokens(parsedAuth.accessToken, parsedAuth.refreshToken);
+                api.setAuthTokens(makeGetOrRefreshAccessToken(parsedAuth, api, setAuthState));
                 setAuthState(parsedAuth);
-                setRefreshTimeout(parsedAuth);
+                // setRefreshTimeout(parsedAuth);
                 setRefreshTokenExpiryTimeout(parsedAuth.refreshToken);
             } else {
                 setAuthState({ status: 'unauthenticated' });
@@ -116,6 +146,11 @@ const useAuthProvider = () => {
             if (refreshTimeout) clearTimeout(refreshTimeout);
         };
     }, [])
+
+    useEffect(() => {
+        if (authState.status !== 'authenticated') return;
+        api.setAuthTokens(makeGetOrRefreshAccessToken(authState, api, setAuthState));
+    }, [authState])
 
 
     return {

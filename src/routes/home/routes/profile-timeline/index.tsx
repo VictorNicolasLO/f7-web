@@ -11,7 +11,7 @@ const ProfileTimeline = () => {
     const params = useParams()
     const auth = useAuthenticatedAuth()
     const api = useApi()
-    const [fetchedUsername, setFetchedUsername] = useState('')
+    const [fetchedUser, setFetchedUser] = useState<{ username?: string, isFollowing?: boolean, notFound?: boolean } | undefined>()
     const userIdParam = params.id as string
     const isCurrentUser = userIdParam === auth.state.userIdB64
 
@@ -30,9 +30,14 @@ const ProfileTimeline = () => {
         (async () => {
             if (!isCurrentUser) {
                 const fetched = await api.userByKey(userIdParam)
-                console.log('Fetched user:', fetched.data.data.username)
-                setFetchedUsername(fetched.data.data.username)
-            }   
+                if (!fetched.data) {
+                    console.error('User not found:', userIdParam);
+                    setFetchedUser({ notFound: true });
+                    return;
+                }
+                console.log('Fetched user:', fetched.data.data)
+                setFetchedUser(fetched.data.data)
+            }
         })();
 
     }, [isCurrentUser, userIdParam]);
@@ -40,13 +45,39 @@ const ProfileTimeline = () => {
     const follow = useCallback(async () => {
         if (isCurrentUser) return;
         await api.follow(userIdParam);
+        setFetchedUser((prev) => ({
+            ...prev,
+            isFollowing: true,
+        }))
         console.log('Followed user:', userIdParam);
     }, [api, userIdParam])
 
-    const username = isCurrentUser ? auth.state.username : fetchedUsername
+    const unfollow = useCallback(async () => {
+        if (isCurrentUser) return;
+        await api.unfollow(userIdParam);
+        setFetchedUser((prev) => ({
+            ...prev,
+            isFollowing: false
+        }))
+        console.log('Followed user:', userIdParam);
+    }, [api, userIdParam])
+
+
+    const username = isCurrentUser ? auth.state.username : fetchedUser?.username || ''
+
+
+    if (fetchedUser?.notFound) {
+        return (
+            <Flex direction={'column'} gap={8} w="100%" alignItems={'center'}>
+                <Text fontSize={'2xl'} fontWeight={'bold'} textAlign={'center'}>User not found</Text>
+            </Flex>
+        )
+    }
+    console.log('Fetched user:', fetchedUser?.isFollowing, username)
     return (
         <Flex direction={'column'} gap={8} w="100%" alignItems={'center'}>
             <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
+                
                 <Text fontSize={'5xl'} fontWeight={'bold'} textAlign={'center'}>{username}</Text>
             </Flex>
             {
@@ -56,7 +87,10 @@ const ProfileTimeline = () => {
                     </Flex>
                     :
                     <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'flex-end'} justifyContent={'flex-end'}>
-                        <Button variant={'outline'} size={'sm'} onClick={follow}>Follow <LuStar /></Button>
+                        {fetchedUser && fetchedUser.isFollowing ?
+                            <Button variant={'outline'} size={'sm'} onClick={unfollow} color={'flash7'}>Unfollow <LuStar /></Button>
+                            :
+                            <Button variant={'outline'} size={'sm'} onClick={follow} color={'initial'}>Follow <LuStar /></Button>}
                     </Flex>
             }
 

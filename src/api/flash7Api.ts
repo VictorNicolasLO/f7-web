@@ -8,16 +8,15 @@ export type ApiConfig = {
 export class Flash7Api {
   private baseUrl: string
 
-  private accessToken?: string
-  private refreshToken?: string
+  private accessToken: ()=> Promise<string> = async ()=> ''
+
 
   constructor(config: ApiConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, '')
   }
 
-  setAuthTokens(accessToken: string, refreshToken: string) {
-    this.accessToken = accessToken
-    this.refreshToken = refreshToken
+  setAuthTokens(accessToken: ()=> Promise<string> ) {
+    this.accessToken= accessToken
   }
 
   async status() {
@@ -47,11 +46,12 @@ export class Flash7Api {
   }
 
   async activateUser(jwt?: string) {
+
     console.log('Activating user with JWT:')
     const res = await fetch(`${this.baseUrl}/commands/activate-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: jwt || this.accessToken }),
+      body: JSON.stringify({ jwt: jwt || await this.accessToken() }),
       mode: 'cors'
     })
     return res.text()
@@ -61,7 +61,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/post`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: this.accessToken, postKey, content }),
+      body: JSON.stringify({ jwt: await this.accessToken(), postKey, content }),
       mode: 'cors'
     })
     return res.text()
@@ -71,7 +71,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/like`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: this.accessToken, postKey }),
+      body: JSON.stringify({ jwt: await this.accessToken(), postKey }),
       mode: 'cors'
     })
     return res.text()
@@ -81,7 +81,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/view`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: this.accessToken, postKey }),
+      body: JSON.stringify({ jwt: await this.accessToken(), postKey }),
       mode: 'cors'
     })
     return res.text()
@@ -91,7 +91,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/comment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: this.accessToken, postKey, content }),
+      body: JSON.stringify({ jwt: await this.accessToken(), postKey, content }),
       mode: 'cors'
     })
     return res.text()
@@ -101,7 +101,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/follow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: this.accessToken, followedKey }),
+      body: JSON.stringify({ jwt: await this.accessToken(), followedKey }),
       mode: 'cors'
     })
     return res.text()
@@ -111,7 +111,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/commands/unfollow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt: this.accessToken, followedKey }),
+      body: JSON.stringify({ jwt: await this.accessToken(), followedKey }),
       mode: 'cors'
     })
     return res.text()
@@ -121,7 +121,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/personal-feed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startSortKey, limit, jwt: this.accessToken, reverse }),
+      body: JSON.stringify({ startSortKey, limit, jwt: await this.accessToken(), reverse }),
       mode: 'cors'
     })
     return res.json()
@@ -131,7 +131,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/global-feed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startSortKey, limit, reverse, jwt: this.accessToken }),
+      body: JSON.stringify({ startSortKey, limit, reverse, jwt: await this.accessToken() }),
       mode: 'cors'
     })
     return res.json()
@@ -147,11 +147,11 @@ export class Flash7Api {
     return res.json()
   }
 
-  async activeUsers(limit?: number, postKey?: string, textSearch?: string) {
+  async activeUsers(limit?: number, textSearch?: string) {
     const res = await fetch(`${this.baseUrl}/queries/active-users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ limit, postKey, textSearch }),
+      body: JSON.stringify({ limit, textSearch, jwt: await this.accessToken() }),
       mode: 'cors'
     })
     return res.json()
@@ -161,7 +161,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/user-timeline`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userKey, startSortKey, limit, reverse, jwt: this.accessToken }),
+      body: JSON.stringify({ userKey, startSortKey, limit, reverse, jwt: await this.accessToken() }),
       mode: 'cors'
     })
     return res.json()
@@ -171,7 +171,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/user-by-key`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userKey, jwt: this.accessToken }),
+      body: JSON.stringify({ userKey, jwt: await this.accessToken() }),
       mode: 'cors'
     })
     return res.json()

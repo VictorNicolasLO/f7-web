@@ -19,11 +19,11 @@ const fetchPosts = async (api: Flash7Api, options: TimelineOptions, lastPostKey?
 
 
 const defaultState = {
-        posts: [] as any[],
-        loading: false,
-        upToDate: false,
-        loadingLikes: {} as Record<string, boolean>,
-    }
+    posts: [] as any[],
+    loading: false,
+    upToDate: false,
+    loadingLikes: {} as Record<string, boolean>,
+}
 
 export const useTimeline = (options: TimelineOptions) => {
     const api = useApi()
@@ -36,7 +36,7 @@ export const useTimeline = (options: TimelineOptions) => {
         postRefs.current[postId] = ref;
     }, [postRefs]);
 
-    useEffect(() => { 
+    useEffect(() => {
         setState(defaultState)
     }, [
         options.type === 'PROFILE' && options.userKey
@@ -78,12 +78,15 @@ export const useTimeline = (options: TimelineOptions) => {
         const lastPost = state.posts[state.posts.length - 1];
         const news = await fetchPosts(api, options, lastPost?.key, FETCH_POSTS_LIMIT)
         console.log('Loaded from infinite loading', news)
-        if (news.data.length <= 1) {
+        if (news.data.length == 0) {
             setState(prev => ({ ...prev, upToDate: true, loading: false }));
             return;
         }
         if (lastPost) {
-
+            if (news.data.length == 1) {
+                setState(prev => ({ ...prev, upToDate: true, loading: false }));
+                return;
+            }
             setState(prev => ({
                 ...prev,
                 posts: [...prev.posts, ...news.data.filter((post: any) => post.key !== lastPost.key)],

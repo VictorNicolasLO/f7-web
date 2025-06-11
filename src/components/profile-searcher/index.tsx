@@ -1,14 +1,46 @@
-import { Box,  IconButton, Input, InputGroup, Link,  VStack } from '@chakra-ui/react'
+import { Box, Icon, IconButton, Input, InputGroup, Link, VStack } from '@chakra-ui/react'
 import { memo } from 'react'
 import { LuSearch, LuStar } from 'react-icons/lu'
+import { Link as RouterLink } from 'react-router-dom'
 
-const ProfileSearcher = memo(() => {
+type ProfileItem = {
+    isFollowing: boolean,
+    username: string,
+    userKey: string
+}
+
+export type ProfileSearcherProps = {
+    onValueChange?: (value: string) => void,
+    value?: string,
+    loading?: boolean
+    profiles?: ProfileItem[],
+    onFollow?: (userKey: string) => void,
+    onContainerIn?: () => void,
+    onContainerOut?: () => void,
+    containerRef?: any,
+    showResults?: boolean,
+    resetSearcher?: () => void
+}
+
+const ProfileSearcher = memo(({
+    onValueChange,
+    value = '',
+    loading = false,
+    profiles = [],
+    onFollow,
+    containerRef,
+    onContainerIn,
+    onContainerOut,
+    showResults,
+    resetSearcher
+}: ProfileSearcherProps) => {
+    console.log('Search results', showResults)
     return (
-        <Box position="relative" flex={1} maxWidth={'sm'}>
+        <Box position="relative" flex={1} maxWidth={'sm'} ref={containerRef} onClick={onContainerIn}>
             <InputGroup maxW={'sm'} startElement={<LuSearch />}>
-                <Input placeholder="Search profiles" />
+                <Input placeholder="Search profiles" onInput={(e) => onValueChange && onValueChange((e.target as HTMLTextAreaElement).value)} value={value} />
             </InputGroup>
-            <Box
+            {showResults && <Box
                 position="absolute"
                 top="100%"
                 mt={2}
@@ -19,30 +51,35 @@ const ProfileSearcher = memo(() => {
                 zIndex="dropdown"
             >
                 <VStack align="stretch">
-                    {new Array(5).fill(0).map((_, i) => (
+                    {profiles.map((profile) => (
                         <Box
-                            key={i}
+                            key={profile.userKey}
                             px={4}
                             py={2}
                             display={'flex'}
                             justifyContent={'space-between'}
                             alignItems={'center'}
                         >
-                            <Link href="#">{'@caffeine_addict#a23A'}</Link>
-                            <IconButton
+                            <Link asChild>
+                                <RouterLink to={`/profile-timeline/${profile.userKey}`} onClick={() => resetSearcher && resetSearcher()}>
+                                    {profile.username}
+                                </RouterLink>
+                            </Link>
+                            <Icon
                                 aria-label="Search database"
-                                variant="outline"
                                 size={'xs'}
-                             
+                                color={profile.isFollowing ? 'flash7' : 'initial'}
+                                onClick={() => onFollow && onFollow(profile.userKey)}
                             >
                                 <LuStar />
-                            </IconButton>
+                            </Icon>
                         </Box>
                     ))}
 
 
                 </VStack>
-            </Box>
+            </Box>}
+
         </Box>
 
     )
