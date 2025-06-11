@@ -4,6 +4,7 @@ import { LuStar, LuGlobe } from "react-icons/lu"
 import ProfileSearcher from "../profile-searcher"
 import { Link as RouterLink } from "react-router-dom"
 import { useProfileSearcher } from "../profile-searcher/hooks/user-profile-searcher"
+import { useMediaQuery } from "usehooks-ts"
 export type TopBarProps = {
     onChangeTab?: (tab: string) => void,
     tab?: string,
@@ -13,19 +14,18 @@ export type TopBarProps = {
 }
 
 const SearchInput = memo((props: ReturnType<typeof useProfileSearcher>) => {
-    return (<GridItem gridColumn={'1'} alignContent={'center'}>
+    return (
         <Flex gap={6} align="center" justify={'flex-start'} minW={'300px'}>
             <RouterLink to={'/feed/news'}>
-                        <Heading minW={
-                'fit-content'
-            } size="2xl">Flash 7</Heading>
+                <Heading minW={
+                    'fit-content'
+                } size="2xl">Flash 7</Heading>
             </RouterLink>
 
             <ProfileSearcher
                 {...props}
             />
-        </Flex>
-    </GridItem>)
+        </Flex>)
 })
 
 
@@ -33,10 +33,11 @@ const SearchInput = memo((props: ReturnType<typeof useProfileSearcher>) => {
 const TopBar = ({ onChangeTab, tab, username, userId, profileSearcher }: TopBarProps) => {
     console.log('render topbar', tab)
 
+    const matches = useMediaQuery('(min-width: 860px)')
 
-    const tabs = useMemo(() => <GridItem gridColumn={'2'}>
+    const tabs = useMemo(() =>
         <Flex gap={4} align="center" justify={'center'} alignSelf={'center'} >
-            <Tabs.Root variant={'enclosed'} onValueChange={({ value }) => onChangeTab && onChangeTab(value)} activationMode="manual" size={'lg'} value={tab || "none"} sm={{
+            <Tabs.Root variant={'enclosed'} onValueChange={({ value }) => onChangeTab && onChangeTab(value)} activationMode="manual" size={{ base: 'lg', smDown: 'sm' }} value={tab || "none"} sm={{
                 "& *": {
                     shadow: 'none'
                 }
@@ -54,28 +55,52 @@ const TopBar = ({ onChangeTab, tab, username, userId, profileSearcher }: TopBarP
                 </Tabs.List>
 
             </Tabs.Root>
+        </Flex>,
+        [onChangeTab, tab])
+
+
+    const welcome = useMemo(() =>
+        <Flex justify={matches ? 'flex-end' : 'center'} align="center" gap={4} minW={'300px'} height={'100%'}>
+            <Heading size="md">Welcome {' '}
+                <Link colorPalette={'teal'} asChild>
+                    <RouterLink to={`/profile-timeline/${userId}`}>{username}</RouterLink>
+                </Link>
+            </Heading>
+        </Flex>, [username, userId, matches])
+
+
+    if (!matches) {
+        return <Flex zIndex={1000} bg="bg/90" backdropBlur={'lg'} backdropFilter={'blur(4px)'} flexDirection={'column'}>
+            <Flex direction={'column'} padding={4} gap={4} alignItems={'center'} justify={'center'}>
+                <Flex alignContent={'center'} marginRight={2}>
+                    <SearchInput {...profileSearcher} />
+                </Flex>
+
+                <Flex >
+                    {welcome}
+                </Flex>
+                <Flex >
+                    {tabs}
+                </Flex>
+            </Flex>
+            <Separator />
         </Flex>
-    </GridItem>, [onChangeTab, tab])
+    }
 
 
-    const welcome = useMemo(() =>                 <GridItem gridColumn={'3'}>
-                    <Flex justify={'flex-end'} align="center" gap={4} minW={'300px'} height={'100%'}>
-                        <Heading size="md">Welcome {' '}
-                            <Link colorPalette={'teal'} asChild>
-                                <RouterLink to={`/profile-timeline/${userId}`}>{username}</RouterLink>
-                            </Link>
-                        </Heading>
-                    </Flex>
-                </GridItem>, [username, userId])
 
     return (
-        <Flex position="sticky" pos={'sticky'} top={0} zIndex={1000} bg="bg/90" backdropBlur={'lg'} backdropFilter={'blur(2px)'} flexDirection={'column'}>
+        <Flex position="sticky" pos={'sticky'} top={0} zIndex={1000} bg="bg/90" backdropBlur={'lg'} backdropFilter={'blur(4px)'} flexDirection={'column'}>
             <Grid templateColumns={'1fr auto 1fr'} padding={4}>
-
-                <SearchInput {...profileSearcher} />
-                {tabs}
-
-                {welcome}
+                <GridItem gridColumn={'1'} alignContent={'center'} marginRight={2}>
+                    <SearchInput {...profileSearcher} />
+                </GridItem>
+                <GridItem gridColumn={'2'}>
+                    {tabs}
+                </GridItem>
+                <GridItem gridColumn={'3'}>
+                    {welcome}
+                </GridItem>
             </Grid>
             <Separator />
         </Flex>

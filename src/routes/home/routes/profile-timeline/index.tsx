@@ -15,7 +15,6 @@ const ProfileTimeline = () => {
     const userIdParam = params.id as string
     const isCurrentUser = userIdParam === auth.state.userIdB64
 
-
     const {
         posts,
         upToDate,
@@ -73,26 +72,25 @@ const ProfileTimeline = () => {
             </Flex>
         )
     }
+    
     console.log('Fetched user:', fetchedUser?.isFollowing, username)
     return (
         <Flex direction={'column'} gap={8} w="100%" alignItems={'center'}>
-            <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-                
-                <Text fontSize={'5xl'} fontWeight={'bold'} textAlign={'center'}>{username}</Text>
+            <Flex width={'100%'} maxW={'100%'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
+
+                <Text fontSize={{ smDown: '4xl', base: '5xl', }} fontWeight={'bold'} textAlign={'center'} truncate maxW={'100%'}>{username}</Text>
             </Flex>
-            {
-                isCurrentUser ?
-                    <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'flex-end'} justifyContent={'flex-end'}>
+            <Flex width={'xl'} maxW={'100%'} flexDirection={'column'} alignItems={'flex-end'} justifyContent={'flex-end'} paddingRight={{ smDown: 2 }}>
+                {
+                    isCurrentUser ?
                         <Button variant={'solid'} size={'sm'} onClick={auth.logout}>Logout <LuLogOut /></Button>
-                    </Flex>
-                    :
-                    <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'flex-end'} justifyContent={'flex-end'}>
-                        {fetchedUser && fetchedUser.isFollowing ?
+                        :
+                        fetchedUser && fetchedUser.isFollowing ?
                             <Button variant={'outline'} size={'sm'} onClick={unfollow} color={'flash7'}>Unfollow <LuStar /></Button>
                             :
-                            <Button variant={'outline'} size={'sm'} onClick={follow} color={'initial'}>Follow <LuStar /></Button>}
-                    </Flex>
-            }
+                            <Button variant={'outline'} size={'sm'} onClick={follow} color={'initial'}>Follow <LuStar /></Button>
+                }
+            </Flex>
 
             <Flex flexDirection={'column'} gap={8} alignItems={'center'} justifyContent={'center'} width="100%">
                 {posts.map((post) => <Post

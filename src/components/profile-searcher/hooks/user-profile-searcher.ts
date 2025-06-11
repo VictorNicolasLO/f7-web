@@ -9,7 +9,7 @@ export const useProfileSearcher = () => {
     const api = useApi();
     const searchInput = useInput('');
     const [profilesState, setProfilesState] = useState({ profiles: [] as any[], loading: false, showResults: true });
-    const searchTimeoutRef = useRef<number | null>(null);
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const containerRef = useRef<any | null>(null);
 
     useEffect(() => {

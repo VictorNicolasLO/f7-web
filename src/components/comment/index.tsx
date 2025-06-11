@@ -25,8 +25,8 @@ userId,username,content, commentKey
 
     </Card.Root>
     return (
-        <Flex align={"center"} justify="center" >
-            <Stack width={'xl'} maxWidth={'xl'} >
+        <Flex align={"center"} justify="center" paddingX={{ smDown: 2 }} width='100%' maxWidth={'xl'}>
+            <Stack width="100%" >
 
                     {cardJsx}
 

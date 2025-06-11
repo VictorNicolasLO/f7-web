@@ -11,7 +11,7 @@ import { set } from "date-fns"
 
 
 const CommentsSection = memo(({ comments }: { comments?: any[] }) => {
-  return <Stack gap={4}>
+  return <Stack gap={4} width="100%" alignItems={'center'} >
     {comments?.map((comment) => (
       <Comment
         key={comment.sortKey}

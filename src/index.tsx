@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import {
@@ -12,6 +11,7 @@ import { ColorModeProvider } from './components/ui/color-mode';
 import { ApiProvider } from './providers/api-provider';
 import { Flash7Api } from './api/flash7Api';
 import { AuthProvider } from './providers/auth-provider';
+
 const config = defineConfig({
   theme: {
      tokens: {

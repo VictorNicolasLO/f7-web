@@ -1,10 +1,11 @@
 
 import { Navigate, Route, Routes, useLocation, } from 'react-router-dom'
 import Login from './routes/login'
-import { memo, useEffect } from 'react'
-import Home from './routes/home'
+import { lazy, memo, useEffect } from 'react'
+
 import { useAuth } from './hooks/use-auth'
 
+const Home = lazy(() => import('./routes/home'))
 
 const RootRouter = () => {
   const auth = useAuth()

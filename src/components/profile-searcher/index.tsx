@@ -1,4 +1,4 @@
-import { Box, Icon, IconButton, Input, InputGroup, Link, VStack } from '@chakra-ui/react'
+import { Box, Icon, Input, InputGroup, Link, Text, VStack } from '@chakra-ui/react'
 import { memo } from 'react'
 import { LuSearch, LuStar } from 'react-icons/lu'
 import { Link as RouterLink } from 'react-router-dom'
@@ -25,12 +25,10 @@ export type ProfileSearcherProps = {
 const ProfileSearcher = memo(({
     onValueChange,
     value = '',
-    loading = false,
     profiles = [],
     onFollow,
     containerRef,
     onContainerIn,
-    onContainerOut,
     showResults,
     resetSearcher
 }: ProfileSearcherProps) => {
@@ -61,8 +59,9 @@ const ProfileSearcher = memo(({
                             alignItems={'center'}
                         >
                             <Link asChild>
-                                <RouterLink to={`/profile-timeline/${profile.userKey}`} onClick={() => resetSearcher && resetSearcher()}>
-                                    {profile.username}
+                                <RouterLink to={`/profile-timeline/${profile.userKey}`} onClick={() => resetSearcher && resetSearcher()} style={{maxWidth: '100%'}}>
+                                <Text maxW={'100%'} truncate>{profile.username}</Text>
+                                    
                                 </RouterLink>
                             </Link>
                             <Icon

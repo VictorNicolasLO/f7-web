@@ -1,6 +1,6 @@
-import { Button, Card, Flex, IconButton, Link, Stack, Text } from "@chakra-ui/react"
+import { Button, Card, Flex, Link, Stack, Text } from "@chakra-ui/react"
 import { formatDistanceToNow } from "date-fns"
-import { forwardRef, memo, useMemo } from "react"
+import {  memo, useMemo } from "react"
 import { LuThumbsUp, LuEye, LuMessageCircle } from "react-icons/lu"
 import { Link as RouterLink } from 'react-router-dom'
 import { decodeTime, isValid } from 'ulid'
@@ -33,7 +33,7 @@ const Post = memo(({ content,
     setRef
 }: PostProps) => {
     const ulidTime = useMemo(() => isValid(postId) ? new Date(decodeTime(postId)) : new Date(), [postId])
-    const cardJsx = <Card.Root size={'lg'} >
+    const cardJsx = useMemo(()=> (<Card.Root size={'lg'} >
         <Card.Body gap={1} >
             <Card.Title>
                 <Link asChild>
@@ -48,7 +48,9 @@ const Post = memo(({ content,
             </Stack>
         </Card.Body>
 
-    </Card.Root>
+    </Card.Root>), [content, postId, userId, username, ulidTime]) 
+
+    
     return (
         <Flex align={"center"} justify="center" ref={(r) => setRef && setRef(postId, r)} width='100%' maxWidth={'xl'} paddingX={{ smDown: 2 }}>
             <Stack w='100%' >
@@ -59,9 +61,7 @@ const Post = memo(({ content,
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
                         <Button aria-label="Search database" variant={'ghost'} asChild>
                              <RouterLink to={`/post-view/${postId}`}> <LuMessageCircle /> {comments || 0}</RouterLink>
-                           
                         </Button>
-                        
                     </Stack>
                     <Stack direction={'column'} gap={1} align="center" justify="space-between">
                         <Button aria-label="Search database" variant={'ghost'} onClick={() => onLike && onLike(postId)} color={hasLike ? 'flash7' : "current"} >
