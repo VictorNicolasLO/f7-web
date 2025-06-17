@@ -24,9 +24,9 @@ const PostBox = ({
         <Stack w='100%' >
             <Textarea disabled={loading} placeholder={placeholder ?? "This will disappear in 7 days. Say anything..."} size={'xl'} resize="none" maxLength={280} autoresize={true} maxH="8lh" onInput={(e) => onValueChange && onValueChange((e.target as HTMLTextAreaElement).value)} value={value} />
             <Flex direction={'row'} justifyContent={'space-between'}>
+                <Text alignSelf={'self-start'} textStyle={'xs'} color={'gray.500'}>{value?.length}/280</Text>
+                <Button  type="button" variant={'outline'} size={'md'} loading={loading} loadingText={loadingText ?? 'Posting...'} onClick={() => onSubmit && onSubmit(value)}>{buttonText ?? 'Post'} <LuPen /></Button>
                 
-                <Button alignSelf={'self-start'} type="button" variant={'outline'} size={'md'} loading={loading} loadingText={loadingText ?? 'Posting...'} onClick={() => onSubmit && onSubmit(value)}>{buttonText ?? 'Post'} <LuPen /></Button>
-                <Text textStyle={'xs'} color={'gray.500'}>{value?.length}/280</Text>
             </Flex>
 
 

@@ -107,19 +107,21 @@ export const useTimeline = (options: TimelineOptions) => {
 
     useEffect(() => {
         const updateTimeline = async () => {
-            if (!firstFetchRef.current) {
-                return;
-            }
+            console.log('Updating timeline')
+            // if (!firstFetchRef.current) {
+            //     return;
+            // }
             const firstPost = state.posts[0];
             const news = await fetchPosts(api, options, firstPost?.key, FETCH_POSTS_LIMIT, false)
+            const newsData = news.data.reverse();
             console.log('Updating timeline', news)
             if (firstPost) {
                 setState(prev => ({
                     ...prev,
-                    posts: [...news.data.filter((post: any) => post.key !== firstPost.key), ...prev.posts]
+                    posts: [...newsData.filter((post: any) => post.key !== firstPost.key), ...prev.posts]
                 }));
             } else {
-                setState(prev => ({ ...prev, posts: [...news.data, ...prev.posts] }));
+                setState(prev => ({ ...prev, posts: [...newsData, ...prev.posts] }));
             }
         }
         const newsInterval = setInterval(updateTimeline, 2000)

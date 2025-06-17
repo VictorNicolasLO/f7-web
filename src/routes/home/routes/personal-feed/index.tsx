@@ -1,10 +1,10 @@
-import { Flex, Spinner } from "@chakra-ui/react"
-import Post from "../../../../../../components/post"
+import { Flex, Spinner, Text } from "@chakra-ui/react"
+import Post from "../../../../components/post"
 import { memo } from "react"
-import { useTimeline } from "../../../../../../hooks/use-timeline"
+import { useTimeline } from "../../../../hooks/use-timeline"
 
 const PersonalFeed = () => {
-      const {
+    const {
         posts,
         upToDate,
         loading,
@@ -12,7 +12,7 @@ const PersonalFeed = () => {
         loaderRef,
         handleLike,
         loadingLikes
-    } = useTimeline({ type : 'PERSONAL_FEED'})
+    } = useTimeline({ type: 'PERSONAL_FEED' })
     return (
         <>
             <Flex flexDirection={'column'} gap={8} alignItems={'center'} justifyContent={'center'}>
@@ -34,9 +34,9 @@ const PersonalFeed = () => {
                     {loading ? <Spinner size={'xl'} color={'blue.500'} /> : <div ref={loaderRef} style={{ width: '60px', height: '60px' }} />}
                 </div>}
                 {
-                  upToDate && posts.length === 0 && <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-                    <p>No posts found in your personal feed.</p>
-                  </Flex>
+                    upToDate && posts.length === 0 && <Flex width={'xl'} maxWidth={'xl'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
+                        <Text textStyle={'title'}>No posts found in your personal feed.</Text>
+                    </Flex>
                 }
 
 

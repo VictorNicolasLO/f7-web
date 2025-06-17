@@ -1,4 +1,4 @@
-import { Flex, Grid, GridItem, Heading, Link, Separator, Tabs } from "@chakra-ui/react"
+import { Em, Flex, Grid, GridItem, Heading, Link, Separator, Tabs, Text } from "@chakra-ui/react"
 import { memo, useMemo } from "react"
 import { LuStar, LuGlobe } from "react-icons/lu"
 import ProfileSearcher from "../profile-searcher"
@@ -19,7 +19,7 @@ const SearchInput = memo((props: ReturnType<typeof useProfileSearcher>) => {
             <RouterLink to={'/feed/news'}>
                 <Heading minW={
                     'fit-content'
-                } size="2xl">Flash 7</Heading>
+                } size="3xl" textStyle={'title'} >Flash 7</Heading>
             </RouterLink>
 
             <ProfileSearcher
@@ -61,7 +61,7 @@ const TopBar = ({ onChangeTab, tab, username, userId, profileSearcher }: TopBarP
 
     const welcome = useMemo(() =>
         <Flex justify={matches ? 'flex-end' : 'center'} align="center" gap={4} minW={'300px'} height={'100%'}>
-            <Heading size="md">Welcome {' '}
+            <Heading size="md" > <Em textStyle={'title'} fontStyle={'initial'} fontSize={'md'} >Welcome</Em>  {' '}
                 <Link colorPalette={'teal'} asChild>
                     <RouterLink to={`/profile-timeline/${userId}`}>{username}</RouterLink>
                 </Link>

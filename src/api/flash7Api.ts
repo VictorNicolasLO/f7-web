@@ -31,7 +31,7 @@ export class Flash7Api {
       body: JSON.stringify({ username, password }),
       mode: 'cors'
     })
-    console.log(res)
+    // console.log(res)
     return res.json()
   }
 
@@ -47,7 +47,7 @@ export class Flash7Api {
 
   async activateUser(jwt?: string) {
 
-    console.log('Activating user with JWT:')
+    // console.log('Activating user with JWT:')
     const res = await fetch(`${this.baseUrl}/commands/activate-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
