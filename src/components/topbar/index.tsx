@@ -19,7 +19,7 @@ const SearchInput = memo((props: ReturnType<typeof useProfileSearcher>) => {
             <RouterLink to={'/feed/news'}>
                 <Heading minW={
                     'fit-content'
-                } size="3xl" textStyle={'title'} >Flash 7</Heading>
+                } size="3xl" textStyle={'title'} letterSpacing={'3px'} >Flash 7</Heading>
             </RouterLink>
 
             <ProfileSearcher
