@@ -4,7 +4,7 @@
 import { ulid } from 'ulid';
 import { Flash7Api } from './flash7Api';
 
-const BASE_URL = 'http://localhost:3200'; // Change to your API base URL
+const BASE_URL = 'http://143.198.244.134'; // Change to your API base URL
 const USERNAME_PREFIX = 'testuser';
 const PASSWORD = 'testpass';
 const MAIN_USER_INDEX = 0;
@@ -12,7 +12,7 @@ const NUM_USERS = 1001;
 const TEST_NAME_POST = 'test x';
 // const NUM_USERS = 1;
 
-const NUM_POSTS = 1;
+const NUM_POSTS = 0;
 
 async function createAndActivateUser(
   api: Flash7Api,
@@ -24,11 +24,11 @@ async function createAndActivateUser(
   const jwt = authRes.jwt || authRes.accessToken || authRes.token;
   api.setAuthTokens(async () => jwt);
   await api.activateUser(jwt);
-  return {jwt, userId: authRes.refreshToken.userIdB64};
+  return { jwt, userId: authRes.refreshToken.userIdB64 };
 }
 
 async function main() {
-  const users: { username: string; password: string; jwt: string, userId:string }[] = [];
+  const users: { username: string; password: string; jwt: string, userId: string }[] = [];
   console.time('Create and activate users');
   // 1. Create and activate users
   // for (let i = 0; i < NUM_USERS; i++) {
@@ -52,8 +52,8 @@ async function main() {
     const username = `${USERNAME_PREFIX}${i}`;
     const api = new Flash7Api({ baseUrl: BASE_URL });
     try {
-      const {jwt,  userId} = await createAndActivateUser(api, username, PASSWORD);
-      users.push({ username, password: PASSWORD, jwt, userId:userId });
+      const { jwt, userId } = await createAndActivateUser(api, username, PASSWORD);
+      users.push({ username, password: PASSWORD, jwt, userId: userId });
       usersCounter++;
       if (usersCounter % 100 === 0)
         console.log(`Created user ${usersCounter}`);

@@ -8,19 +8,21 @@ export type ApiConfig = {
 export class Flash7Api {
   private baseUrl: string
 
-  private accessToken: ()=> Promise<string> = async ()=> ''
+  private accessToken: () => Promise<string> = async () => ''
 
 
   constructor(config: ApiConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, '')
   }
 
-  setAuthTokens(accessToken: ()=> Promise<string> ) {
-    this.accessToken= accessToken
+  setAuthTokens(accessToken: () => Promise<string>) {
+    this.accessToken = accessToken
   }
 
   async status() {
-    const res = await fetch(`${this.baseUrl}/api/status`, { mode: 'cors' })
+    const res = await fetch(`${this.baseUrl}/api/status`, {
+      mode: 'same-origin'
+    })
     return res.text()
   }
 
@@ -29,7 +31,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     // console.log(res)
     return res.json()
@@ -40,7 +42,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -52,7 +54,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: jwt || await this.accessToken() }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -62,7 +64,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: await this.accessToken(), postKey, content }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -72,7 +74,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: await this.accessToken(), postKey }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -82,7 +84,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: await this.accessToken(), postKey }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -92,7 +94,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: await this.accessToken(), postKey, content }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -102,7 +104,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: await this.accessToken(), followedKey }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -112,7 +114,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt: await this.accessToken(), followedKey }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.text()
   }
@@ -122,7 +124,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ startSortKey, limit, jwt: await this.accessToken(), reverse }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -132,7 +134,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ startSortKey, limit, reverse, jwt: await this.accessToken() }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -142,7 +144,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ postKey, startSortKey, limit, reverse }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -152,7 +154,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ limit, textSearch, jwt: await this.accessToken() }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -162,7 +164,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userKey, startSortKey, limit, reverse, jwt: await this.accessToken() }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -172,7 +174,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userKey, jwt: await this.accessToken() }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
@@ -182,7 +184,7 @@ export class Flash7Api {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ postKey }),
-      mode: 'cors'
+      mode: 'same-origin'
     })
     return res.json()
   }
