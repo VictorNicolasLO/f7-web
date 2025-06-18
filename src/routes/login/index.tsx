@@ -39,7 +39,10 @@ const Login = () => {
           <Heading size="5xl" textStyle={'title'} letterSpacing={'5px'} >Flash 7</Heading>
           <Field.Root invalid={!!errors.username}>
             <Field.Label>Username</Field.Label>
-            <Input {...register("username")} />
+            <Input {...register("username")} autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck="false"
+              autoComplete="username" />
             <Field.ErrorText>{errors.username?.message}</Field.ErrorText>
           </Field.Root>
 
