@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useApi } from "./user-api"
+import { useApi } from "./use-api"
 import { Flash7Api } from "../api/flash7Api"
 
 export type TimelineOptions = { type: 'GLOBAL' } | { type: 'PROFILE', userKey: string } | { type: 'PERSONAL_FEED' }
@@ -26,7 +26,7 @@ const defaultState = {
 }
 
 export const useTimeline = (options: TimelineOptions) => {
-    const api = useApi()
+    const { api } = useApi()
     const [state, setState] = useState(defaultState);
     const loaderRef = useRef(null)
     const postRefs = useRef<Record<string, any>>([]);

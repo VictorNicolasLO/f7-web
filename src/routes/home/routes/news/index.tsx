@@ -5,7 +5,7 @@ import { memo, useCallback, useState } from "react"
 import { useTimeline } from "../../../../hooks/use-timeline"
 import PostBox from "../../../../components/post-box"
 import { useInput } from "../../../../hooks/use-input"
-import { useApi } from "../../../../hooks/user-api"
+import { useApi } from "../../../../hooks/use-api"
 import { ulid } from "ulid"
 
 const News = () => {
@@ -20,7 +20,7 @@ const News = () => {
     } = useTimeline({ type: 'GLOBAL' })
 
     const input = useInput('')
-    const api = useApi()
+    const { api } = useApi()
     const [loadingSendPost, setLoading] = useState(false)
     const sendPost = useCallback(async (value?: string) => {
         if (!value || value.trim() === '') {

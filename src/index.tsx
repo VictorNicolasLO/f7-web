@@ -5,7 +5,7 @@ import {
 } from '@chakra-ui/react'
 import { ColorModeProvider } from './components/ui/color-mode';
 import { ApiProvider } from './providers/api-provider';
-import { Flash7Api } from './api/flash7Api';
+import { Flash7Api, withErrorHandling } from './api/flash7Api';
 import { AuthProvider } from './providers/auth-provider';
 import system from './theme';
 
@@ -25,7 +25,7 @@ if (rootEl) {
     // <React.StrictMode>
     <ChakraProvider value={system}>
       <ColorModeProvider>
-        <ApiProvider api={api}>
+        <ApiProvider api={withErrorHandling(api)}>
           <AuthProvider>
             <App />
           </AuthProvider>

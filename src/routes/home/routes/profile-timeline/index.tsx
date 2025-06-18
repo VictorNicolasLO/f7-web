@@ -5,12 +5,12 @@ import { useParams } from 'react-router-dom'
 import { useAuthenticatedAuth } from "../../../../hooks/use-auth"
 import { useTimeline } from "../../../../hooks/use-timeline"
 import { useCallback, useEffect, useState } from "react"
-import { useApi } from "../../../../hooks/user-api"
+import { useApi } from "../../../../hooks/use-api"
 
 const ProfileTimeline = () => {
     const params = useParams()
     const auth = useAuthenticatedAuth()
-    const api = useApi()
+    const { api } = useApi()
     const [fetchedUser, setFetchedUser] = useState<{ username?: string, isFollowing?: boolean, notFound?: boolean } | undefined>()
     const userIdParam = params.id as string
     const isCurrentUser = userIdParam === auth.state.userIdB64

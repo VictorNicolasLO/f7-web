@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useState } from "react"
 import Post from "../../../../components/post"
 import Comment from "../../../../components/comment"
 import PostBox from "../../../../components/post-box"
-import { useApi } from "../../../../hooks/user-api"
+import { useApi } from "../../../../hooks/use-api"
 import { useParams } from "react-router-dom"
 import { useInput } from "../../../../hooks/use-input"
 import { LuChevronsDown } from 'react-icons/lu'
@@ -17,9 +17,9 @@ const CommentsSection = memo(({ comments }: { comments?: any[] }) => {
         key={comment.sortKey}
         content={comment.data.content}
         userId={comment.data.userKey}
-        username={comment.data.username} 
+        username={comment.data.username}
         commentKey={comment.sortKey}
-        />
+      />
     ))}
 
   </Stack>
@@ -35,7 +35,7 @@ type PostViewState = {
 }
 const FETCH_COMMENTS_LIMIT = 10 // Cant be less than 2
 const PostView = () => {
-  const api = useApi()
+  const { api } = useApi()
   const params = useParams()
   const [{ loading, post, loadingSend, comments, commentsUpdated, commentsLoading }, setPostView] = useState<PostViewState>({ loading: true })
   const inputBox = useInput('')
@@ -125,8 +125,8 @@ const PostView = () => {
   useEffect(() => {
     const updateCommentsTimeline = async () => {
 
-      const firstComment = comments ? comments[0]:undefined;
-      const news = await api.comments(postKey || '',firstComment?.sortKey, FETCH_COMMENTS_LIMIT, false)
+      const firstComment = comments ? comments[0] : undefined;
+      const news = await api.comments(postKey || '', firstComment?.sortKey, FETCH_COMMENTS_LIMIT, false)
       console.log('Updating timeline comments', news)
       if (firstComment) {
         setPostView((prevPostView) => ({

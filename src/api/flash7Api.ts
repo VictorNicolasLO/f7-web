@@ -10,6 +10,7 @@ export class Flash7Api {
 
   private accessToken: () => Promise<string> = async () => ''
 
+  onError?: (error: Error) => void
 
   constructor(config: ApiConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, '')
@@ -190,6 +191,42 @@ export class Flash7Api {
   }
 }
 
+export function withErrorHandling<T extends Flash7Api>(api: T): T {
+  return new Proxy(api, {
+    get(target, prop, receiver) {
+      const orig = Reflect.get(target, prop, receiver)
+      if (typeof orig === 'function' && prop !== 'onError' && prop !== 'setAuthTokens') {
+        return async function (...args: any[]) {
+          try {
+            // Ensure 'this' refers to the target instance
+            console.log(`Calling API method: ${String(prop)}`, args)
+            const response = await orig.apply(target, args)
+            console.log(`API method ${String(prop)} response:`, response)
+            if (response && response.errors) {
+              console.log('API Error:', response.errors)
+              if (typeof target.onError === 'function') {
+                target.onError(response.errors)
+              }
+
+              throw new Error(response.errors)
+            }
+            return response
+          } catch (error) {
+            console.log('API Error:', error)
+            if (typeof target.onError === 'function') {
+              target.onError(error instanceof Error ? error : new Error(String(error)))
+            }
+            throw error
+          }
+        }
+      }
+      return orig
+    }
+  })
+}
+
 // Usage example (in your frontend):
 // const api = new Flash7Api({ baseUrl: 'http://localhost:3000' })
 // await api.auth('user', 'pass')
+// const apiWithErrors = withErrorHandling(api)
+// apiWithErrors.onError = (err) => { /* handle error */ }
