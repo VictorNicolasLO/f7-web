@@ -41,7 +41,7 @@ const Post = memo(({ content,
                 </Link>
             </Card.Title>
             <Stack gap={0}>
-                <Link asChild textStyle={'sm'}>
+                <Link asChild textStyle={'sm'} width={'fit-content'} >
                     <RouterLink to={`/profile-timeline/${userId}`}>@{username}</RouterLink>
                 </Link>
                 {<Text textStyle={'xs'}>{formatDistanceToNow(ulidTime, { addSuffix: true })}</Text>}
