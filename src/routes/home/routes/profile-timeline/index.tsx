@@ -86,7 +86,7 @@ const ProfileTimeline = () => {
                         <Flex gap={4} alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
 
                             <Link href="https://forms.gle/GCVsskZt8V5wSWsaA" target="_blank">
-                                Help use to improve <LuMessageSquareMore />
+                                Help us to improve <LuMessageSquareMore />
                             </Link>
                             <Button variant={'solid'} size={'sm'} onClick={auth.logout}>Logout <LuLogOut /></Button>
                         </Flex>
