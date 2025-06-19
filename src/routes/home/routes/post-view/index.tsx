@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom"
 import { useInput } from "../../../../hooks/use-input"
 import { LuChevronsDown } from 'react-icons/lu'
 import { set } from "date-fns"
+import { useVisibilityChange } from "@uidotdev/usehooks"
 
 
 const CommentsSection = memo(({ comments }: { comments?: any[] }) => {
@@ -34,7 +35,10 @@ type PostViewState = {
   commentsLoading?: boolean;
 }
 const FETCH_COMMENTS_LIMIT = 10 // Cant be less than 2
+
+
 const PostView = () => {
+  const isPageVisible = useVisibilityChange()
   const { api } = useApi()
   const params = useParams()
   const [{ loading, post, loadingSend, comments, commentsUpdated, commentsLoading }, setPostView] = useState<PostViewState>({ loading: true })
@@ -123,6 +127,10 @@ const PostView = () => {
   }, [comments, loading, api])
 
   useEffect(() => {
+    if (!isPageVisible) {
+      console.log('Page is not visible, skipping comments update')
+      return;
+    }
     const updateCommentsTimeline = async () => {
 
       const firstComment = comments ? comments[0] : undefined;
@@ -145,7 +153,7 @@ const PostView = () => {
     return () => {
       clearInterval(newsInterval)
     }
-  }, [setPostView, api, comments])
+  }, [setPostView, api, comments, isPageVisible])
 
 
 

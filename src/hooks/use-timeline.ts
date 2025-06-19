@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useApi } from "./use-api"
 import { Flash7Api } from "../api/flash7Api"
+import { useVisibilityChange } from "@uidotdev/usehooks"
 
 export type TimelineOptions = { type: 'GLOBAL' } | { type: 'PROFILE', userKey: string } | { type: 'PERSONAL_FEED' }
 
@@ -27,6 +28,7 @@ const defaultState = {
 
 export const useTimeline = (options: TimelineOptions) => {
     const { api } = useApi()
+    const isPageVisible = useVisibilityChange()
     const [state, setState] = useState(defaultState);
     const loaderRef = useRef(null)
     const postRefs = useRef<Record<string, any>>([]);
@@ -106,6 +108,10 @@ export const useTimeline = (options: TimelineOptions) => {
     }, [state.posts, state.loading, state.upToDate, api])
 
     useEffect(() => {
+        if (!isPageVisible) {
+            console.log('Page is not visible, skipping timeline update')
+            return;
+        }
         const updateTimeline = async () => {
             console.log('Updating timeline')
             // if (!firstFetchRef.current) {
@@ -128,7 +134,7 @@ export const useTimeline = (options: TimelineOptions) => {
         return () => {
             clearInterval(newsInterval)
         }
-    }, [api, state.posts])
+    }, [api, state.posts, isPageVisible, options])
 
     useEffect(() => {
         const observer = new IntersectionObserver(
