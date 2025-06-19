@@ -1,6 +1,6 @@
-import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Button, Flex, Link, Spinner, Text } from "@chakra-ui/react"
 import Post from "../../../../components/post"
-import { LuStar, LuLogOut } from "react-icons/lu"
+import { LuStar, LuLogOut, LuMessageSquareMore } from "react-icons/lu"
 import { useParams } from 'react-router-dom'
 import { useAuthenticatedAuth } from "../../../../hooks/use-auth"
 import { useTimeline } from "../../../../hooks/use-timeline"
@@ -83,7 +83,13 @@ const ProfileTimeline = () => {
             <Flex width={'xl'} maxW={'100%'} flexDirection={'column'} alignItems={'flex-end'} justifyContent={'flex-end'} paddingRight={{ smDown: 2 }}>
                 {
                     isCurrentUser ?
-                        <Button variant={'solid'} size={'sm'} onClick={auth.logout}>Logout <LuLogOut /></Button>
+                        <Flex gap={4} alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
+
+                            <Link href="https://forms.gle/GCVsskZt8V5wSWsaA" target="_blank">
+                                Help use to improve <LuMessageSquareMore />
+                            </Link>
+                            <Button variant={'solid'} size={'sm'} onClick={auth.logout}>Logout <LuLogOut /></Button>
+                        </Flex>
                         :
                         fetchedUser && fetchedUser.isFollowing ?
                             <Button variant={'outline'} size={'sm'} onClick={unfollow} color={'flash7'}>Unfollow <LuStar /></Button>

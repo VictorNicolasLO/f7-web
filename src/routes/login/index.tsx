@@ -18,7 +18,8 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setError
+    setError,
+    setValue
   } = useForm<FormValues>()
 
   const onSubmit = handleSubmit((data: FormValues) => {
@@ -32,6 +33,13 @@ const Login = () => {
     }
     auth.login(data.username, data.password)
   })
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const filtered = e.target.value.replace(/[^a-z0-9]/g, "");
+    setValue("username", filtered); // "username" is the field name
+  }
+
   return (
     <Flex align={"center"} justify="center" height="100vh">
       <form onSubmit={onSubmit}>
@@ -42,7 +50,7 @@ const Login = () => {
             <Input {...register("username")} autoCapitalize="off"
               autoCorrect="off"
               spellCheck="false"
-              autoComplete="username" />
+              onChange={handleChange} maxLength={20} />
             <Field.ErrorText>{errors.username?.message}</Field.ErrorText>
           </Field.Root>
 
@@ -50,7 +58,7 @@ const Login = () => {
             <Field.Label>PassKey</Field.Label>
             <PasswordInput {...register("password")} />
             <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
-            <Field.HelperText>Your passkey will be always the same for your user.</Field.HelperText>
+            <Field.HelperText>Dont forget your passkey, it will be always the same for your user.</Field.HelperText>
           </Field.Root>
 
 
