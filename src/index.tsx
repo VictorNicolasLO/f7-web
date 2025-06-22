@@ -11,11 +11,11 @@ import system from './theme';
 
 
 
-
+const isDev = import.meta.env.DEV
 
 
 const api = new Flash7Api({
-  baseUrl: 'https://api-beta.f-7.io',
+  baseUrl: isDev ? 'http://localhost:8001' : 'https://api-beta.f-7.io',
 })
 
 const rootEl = document.getElementById('root');
