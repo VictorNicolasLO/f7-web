@@ -38,7 +38,23 @@ const News = () => {
             <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
                 <PostBox {...input} onSubmit={sendPost} loading={loadingSendPost} />
             </Flex>
+
             <Flex flexDirection={'column'} gap={8} alignItems={'center'} justifyContent={'center'}>
+                <Post
+                    key={'global-post'}
+                    content={'post.data.content'}
+                    comments={0}
+                    views={0}
+                    likes={0}
+                    postId={'post.key'}
+                    userId={'post.data.userKey'}
+                    username={'post.data.username'}
+                    onLike={handleLike}
+                    hasLike={true}
+                    loadingLike={false}
+
+                    disabled={true}
+                />
                 {posts.map((post) => <Post
                     key={post.key}
                     content={post.data.content}

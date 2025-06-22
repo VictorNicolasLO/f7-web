@@ -18,6 +18,7 @@ type PostProps = {
     hasView?: boolean,
     loadingLike?: boolean,
     setRef?: (postId: string, ref: any) => void
+    disabled?: boolean
 }
 
 const Post = memo(({ content,
@@ -30,7 +31,8 @@ const Post = memo(({ content,
     onLike,
     hasLike,
     hasView,
-    setRef
+    setRef,
+    disabled = false
 }: PostProps) => {
     const ulidTime = useMemo(() => isValid(postId) ? new Date(decodeTime(postId)) : new Date(), [postId])
     const cardJsx = useMemo(() => (<Card.Root size={'lg'} >
@@ -52,7 +54,8 @@ const Post = memo(({ content,
 
 
     return (
-        <Flex align={"center"} justify="center" ref={(r) => setRef && setRef(postId, r)} width='100%' maxWidth={'xl'} paddingX={{ smDown: 2 }}>
+        <Flex align={"center"} justify="center" ref={(r) => setRef && setRef(postId, r)} width='100%' maxWidth={'xl'} paddingX={{ smDown: 2 }}
+            style={{ pointerEvents: disabled ? 'none' : 'auto', opacity: disabled ? 0.4 : 1 }} animation={'fadeIn'}>
             <Stack w='100%' >
 
                 {cardJsx}
