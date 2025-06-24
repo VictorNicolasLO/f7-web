@@ -184,7 +184,7 @@ export class Flash7Api {
     const res = await fetch(`${this.baseUrl}/queries/post-by-key`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ postKey }),
+      body: JSON.stringify({ postKey, jwt: await this.accessToken() }),
       mode: 'cors'
     })
     return res.json()
