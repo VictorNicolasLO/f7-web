@@ -43,7 +43,7 @@ const Login = () => {
   return (
     <Flex align={"center"} justify="center" height="100vh">
       <form onSubmit={onSubmit}>
-        <Stack gap="4" align="flex-start" width={'sm'} maxWidth={'xs'} >
+        <Stack gap="4" align="center" width={'sm'} maxWidth={'xs'} >
           <Heading size="5xl" textStyle={'title'} letterSpacing={'5px'} >Flash 7</Heading>
           {/* <Field.Root invalid={!!errors.username}>
             <Field.Label>Username</Field.Label>
