@@ -45,7 +45,7 @@ const Login = () => {
       <form onSubmit={onSubmit}>
         <Stack gap="4" align="flex-start" width={'sm'} maxWidth={'xs'} >
           <Heading size="5xl" textStyle={'title'} letterSpacing={'5px'} >Flash 7</Heading>
-          <Field.Root invalid={!!errors.username}>
+          {/* <Field.Root invalid={!!errors.username}>
             <Field.Label>Username</Field.Label>
             <Input {...register("username")} autoCapitalize="off"
               autoCorrect="off"
@@ -62,7 +62,7 @@ const Login = () => {
           </Field.Root>
 
 
-          <Button type="submit" loading={authStatus === 'authenticating'} loadingText="Accessing...">Access</Button>
+          <Button type="submit" loading={authStatus === 'authenticating'} loadingText="Accessing...">Access</Button> */}
         </Stack>
       </form>
     </Flex>
